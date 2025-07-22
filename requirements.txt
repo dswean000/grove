@@ -1,0 +1,7 @@
+Flask==3.0.0
+requests
+feedparser==6.0.8 
+Shapely
+Flask-Caching
+requests
+azure-functions
