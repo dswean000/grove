@@ -1,5 +1,5 @@
 {
-  "name": "Hiouchi Weather",
+  "name": "Grove Weather",
   "showOnLockScreen": true,
   "views": [
     {
@@ -9,14 +9,14 @@
   ],
   "families": [
     {
-      "family": "graphicCircular",
-      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "family": "modularSmall",
+      "class": "CLKComplicationTemplateModularSmallStackText",
       "line1": "Flood",
       "line2": "0%"
     },
     {
-      "family": "graphicCircular",
-      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "family": "modularLarge",
+      "class": "CLKComplicationTemplateModularLargeStandardBody",
       "header": "Grove Wx",
       "body1": "Flood Watch",
       "body2": "Mesoscale: 0%, Rain: 46%"
@@ -30,6 +30,12 @@
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "\ud83c\udf27\ufe0f",
+      "line2": "Thu 40%"
+    },
+    {
+      "family": "utilitarianSmall",
+      "class": "CLKComplicationTemplateUtilitarianSmallFlat",
       "text": "Flood 0%"
     }
   ]

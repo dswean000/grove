@@ -4,9 +4,7 @@ import os
 import json
 from datetime import datetime, timezone
 from main import get_watches, get_mesoscales, get_max_risk, get_forecast
-
 from dotenv import load_dotenv
-import os
 
 load_dotenv("locations.env")
 
@@ -22,7 +20,6 @@ SEVERITY_RANK = {
     None: 0  # In case severity is missing
 }
 
-
 WATCH_NAME_MAP = {
     "Severe Thunderstorm Watch": "T-Storm",
     "Heat Advisory": "Heat",
@@ -30,10 +27,8 @@ WATCH_NAME_MAP = {
     "Tornado Watch": "Tor",
     "Winter Weather Advisory": "WWA",
     "Winter Storm Warning": "WSW"
-    # Add more as needed
 }
 
-# Emoji per severity rank
 SEVERITY_EMOJI = {
     "Extreme": "🔥",
     "Severe": "⚠️",
@@ -42,7 +37,6 @@ SEVERITY_EMOJI = {
     "Unknown": "❓",
     None: "❓"
 }
-
 
 def get_weather_summary(lat, lon):
     watches = get_watches(lat, lon)
@@ -69,41 +63,54 @@ def get_weather_summary(lat, lon):
         "risk": risk
     }
 
-
-
-
-
 def get_most_severe_watch(watches):
-    """
-    Return the name (key) of the watch with the highest severity.
-    """
     most_severe_name = None
     highest_rank = -1
 
     for event, details in watches.items():
         severity = details.get("severity", "Unknown")
         rank = SEVERITY_RANK.get(severity, 0)
-
         if rank > highest_rank:
             highest_rank = rank
             most_severe_name = event
 
     return most_severe_name
 
-
 def get_short_watch_name(full_name):
-    # Return mapped short name or fallback to first 7 chars
     return WATCH_NAME_MAP.get(full_name, full_name[:7])
 
 def get_emoji_by_severity(severity):
     return SEVERITY_EMOJI.get(severity, "❓")
 
-def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob):
+def build_rain_graphic_circular(next_rain_date_str, rain_prob):
+    if not next_rain_date_str:
+        return {
+            "family": "graphicCircular",
+            "class": "CLKComplicationTemplateGraphicCircularStackText",
+            "line1": "🌞",
+            "line2": "Dry"
+        }
+
+    try:
+        day_str = datetime.strptime(next_rain_date_str, "%Y-%m-%d").strftime("%a")  # e.g. "Tue"
+    except Exception:
+        day_str = "N/A"
+
+    return {
+        "family": "graphicCircular",
+        "class": "CLKComplicationTemplateGraphicCircularStackText",
+        "line1": "🌧️",
+        "line2": f"{day_str} {rain_prob}%"
+    }
+
+def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob, next_rain_date=None, next_rain_prob=0):
     short_name = get_short_watch_name(watch_name)
     emoji = get_emoji_by_severity(severity)
 
+    rain_complication = build_rain_graphic_circular(next_rain_date, next_rain_prob)
+
     return {
-        "name": "Hiouchi Weather",
+        "name": "Grove Weather",
         "showOnLockScreen": True,
         "views": [
             {
@@ -113,14 +120,14 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
         ],
         "families": [
             {
-                "family": "graphicCircular",
-                "class": "CLKComplicationTemplateGraphicCircularStackText",
+                "family": "modularSmall",
+                "class": "CLKComplicationTemplateModularSmallStackText",
                 "line1": short_name,
                 "line2": f"{mesoscale_prob}%"
             },
             {
-                "family": "graphicCircular",
-                "class": "CLKComplicationTemplateGraphicCircularStackText",
+                "family": "modularLarge",
+                "class": "CLKComplicationTemplateModularLargeStandardBody",
                 "header": "Grove Wx",
                 "body1": watch_name,
                 "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
@@ -131,9 +138,10 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
                 "line1": emoji,
                 "line2": short_name
             },
+            rain_complication,
             {
-                "family": "graphicCircular",
-                "class": "CLKComplicationTemplateGraphicCircularStackText",
+                "family": "utilitarianSmall",
+                "class": "CLKComplicationTemplateUtilitarianSmallFlat",
                 "text": f"{short_name} {mesoscale_prob}%"
             }
         ]
@@ -156,19 +164,31 @@ def simplify_for_complication(data):
 
     rainalerts = forecast_data.get("rainalerts", {})
     max_rain_prob = 0
-    for alert in rainalerts.values():
+    next_rain_date = None
+    next_rain_prob = 0
+
+    for alert_date_str, alert in rainalerts.items():
         prob = alert.get("probability", 0)
         if prob and prob > max_rain_prob:
             max_rain_prob = prob
+        try:
+            alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d")
+            if (not next_rain_date or alert_date < next_rain_date) and prob > 0:
+                next_rain_date = alert_date
+                next_rain_prob = prob
+        except Exception:
+            continue
+
+    next_rain_date_str = next_rain_date.strftime("%Y-%m-%d") if next_rain_date else None
 
     return {
         "watch_name": watch_name,
         "severity": severity,
         "mesoscale_probability": mesoscale_prob,
-        "max_rain_probability": max_rain_prob
+        "max_rain_probability": max_rain_prob,
+        "next_rain_date": next_rain_date_str,
+        "next_rain_probability": next_rain_prob,
     }
-
-
 
 def main():
     latitude = os.getenv("LATITUDE")
@@ -179,31 +199,27 @@ def main():
     latitude = float(latitude)
     longitude = float(longitude)
 
-    # Get full weather data
     summary = get_weather_summary(latitude, longitude)
     print("Full detailed JSON:")
     print(json.dumps(summary, indent=2))
 
-    # Simplify to extract key fields for the complication
     simple = simplify_for_complication(summary)
     print("\nSimplified data:")
     print(json.dumps(simple, indent=2))
 
-    # Build the actual complication JSON for the watch
     complication_json = build_complication_json(
         simple["watch_name"],
         simple["severity"],
         simple["mesoscale_probability"],
-        simple["max_rain_probability"]
+        simple["max_rain_probability"],
+        simple.get("next_rain_date"),
+        simple.get("next_rain_probability"),
     )
     print("\nComplication JSON:")
     print(json.dumps(complication_json, indent=2))
 
-    # Save complication JSON to file for app consumption
     with open("output.json", "w") as f:
         json.dump(complication_json, f, indent=2)
-
-
 
 if __name__ == "__main__":
     main()
