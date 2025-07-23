@@ -11,15 +11,26 @@
     {
       "family": "modularSmall",
       "class": "CLKComplicationTemplateModularSmallStackText",
-      "line1": "\u26a0\ufe0f Flood",
+      "line1": "Flood",
       "line2": "0%"
     },
     {
       "family": "modularLarge",
-      "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "header": "Weather Alert",
-      "body1": "\u26a0\ufe0f Watch: Flood Watch",
+      "class": "CLKComplicationTemplateModularLargeStandardBody",
+      "header": "Grove Wx",
+      "body1": "Flood Watch",
       "body2": "Mesoscale: 0%, Rain: 46%"
+    },
+    {
+      "family": "graphicCircular",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "\u26a0\ufe0f",
+      "line2": "Flood"
+    },
+    {
+      "family": "utilitarianSmall",
+      "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+      "text": "Flood 0%"
     }
   ]
 }
