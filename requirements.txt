@@ -3,5 +3,4 @@ requests
 feedparser==6.0.8 
 Shapely
 Flask-Caching
-requests
-azure-functions
+python-dotenv
