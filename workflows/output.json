@@ -4,22 +4,22 @@
   "views": [
     {
       "type": "text",
-      "body": "Watch: Heat Advisory\nMesoscale Prob: 0%\nRain Prob: 42%"
+      "body": "Watch: Flood Watch\nMesoscale Prob: 0%\nRain Prob: 46%"
     }
   ],
   "families": [
     {
       "family": "modularSmall",
       "class": "CLKComplicationTemplateModularSmallStackText",
-      "line1": "Heat Advis\u2026",
+      "line1": "Flood Watc\u2026",
       "line2": "0%"
     },
     {
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
       "header": "Weather Alert",
-      "body1": "Heat Advisory",
-      "body2": "Mesoscale: 0%, Rain: 42%"
+      "body1": "Flood Watch",
+      "body2": "Mesoscale: 0%, Rain: 46%"
     }
   ]
 }
