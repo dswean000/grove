@@ -94,8 +94,9 @@ def get_most_severe_watch(watches):
 
 
 def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
-    # Shorten the watch name for small complications
-    watch_short = watch_name[:9]
+    watch_short = (watch_name[:9].strip() if watch_name else "None")
+    mesoscale_prob = int(float(mesoscale_prob)) if mesoscale_prob else 0
+    max_rain_prob = int(float(max_rain_prob)) if max_rain_prob else 0
 
     return {
         "name": "Grove Weather",
@@ -151,7 +152,6 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
             }
         ]
     }
-
 
 
 def main():
