@@ -1,12 +1,25 @@
 {
-  "mesoscale_active": 0,
-  "mesoscale_probability": 0,
-  "risk_day1": 0,
-  "risk_day2": 1,
-  "risk_day3": 1,
-  "rain_alert": 1,
-  "max_rain_probability": 42,
-  "max_rain_date": "2025-07-24",
-  "updated": "2025-07-23T01:04:32.108541+00:00",
-  "most_severe_watch": "Heat Advisory"
+  "name": "Grove Weather",
+  "showOnLockScreen": true,
+  "views": [
+    {
+      "type": "text",
+      "body": "Watch: Heat Advisory\nMesoscale Prob: 0%\nRain Prob: 42%"
+    }
+  ],
+  "families": [
+    {
+      "family": "modularSmall",
+      "class": "CLKComplicationTemplateModularSmallStackText",
+      "line1": "Heat Advis\u2026",
+      "line2": "0%"
+    },
+    {
+      "family": "modularLarge",
+      "class": "CLKComplicationTemplateModularLargeStandardBody",
+      "header": "Weather Alert",
+      "body1": "Heat Advisory",
+      "body2": "Mesoscale: 0%, Rain: 42%"
+    }
+  ]
 }
