@@ -120,7 +120,7 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
             },
             {
                 "family": "modularLarge",
-                "class": "CLKComplicationTemplateModularLargeStandardBody",
+                "class": "CLKComplicationTemplateGraphicCircularStackText",
                 "header": "Weather Alert",
                 "body1": f"{emoji} Watch: {watch_name}",
                 "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
