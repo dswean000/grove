@@ -119,6 +119,9 @@ def main():
     print("\nSimplified JSON for complication:")
     print(json.dumps(simple, indent=2))
 
+    with open("output.json", "w") as f:
+        json.dump(simple, f, indent=2)
+
 
 if __name__ == "__main__":
     main()
