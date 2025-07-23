@@ -182,7 +182,7 @@ def main():
     # Build the actual complication JSON for the watch
     complication_json = build_complication_json(
         simple["watch_name"],
-        simple["severity"],  # Fix: add severity here
+        simple["severity"],
         simple["mesoscale_probability"],
         simple["max_rain_probability"]
     )
