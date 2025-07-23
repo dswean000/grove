@@ -1,5 +1,5 @@
 {
-  "name": "Let's go now",
+  "name": "Let's go now2",
   "showOnLockScreen": true,
   "views": [
     {
@@ -20,6 +20,17 @@
       "header": "Grove Wx",
       "body1": "Heat Advisory",
       "body2": "Mesoscale: 0%, Rain: 42%"
+    },
+    {
+      "family": "graphicCircular",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "Wx",
+      "line2": "Heat"
+    },
+    {
+      "family": "utilitarianSmall",
+      "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+      "text": "Heat 0%"
     }
   ]
 }
