@@ -103,7 +103,7 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
     emoji = get_emoji_by_severity(severity)
 
     return {
-        "name": "Grove Weather",
+        "name": "Hiouchi Weather",
         "showOnLockScreen": True,
         "views": [
             {
@@ -113,14 +113,14 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
         ],
         "families": [
             {
-                "family": "modularSmall",
-                "class": "CLKComplicationTemplateModularSmallStackText",
+                "family": "graphicCircular",
+                "class": "CLKComplicationTemplateGraphicCircularStackText",
                 "line1": short_name,
                 "line2": f"{mesoscale_prob}%"
             },
             {
-                "family": "modularLarge",
-                "class": "CLKComplicationTemplateModularLargeStandardBody",
+                "family": "graphicCircular",
+                "class": "CLKComplicationTemplateGraphicCircularStackText",
                 "header": "Grove Wx",
                 "body1": watch_name,
                 "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
@@ -132,8 +132,8 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob)
                 "line2": short_name
             },
             {
-                "family": "utilitarianSmall",
-                "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+                "family": "graphicCircular",
+                "class": "CLKComplicationTemplateGraphicCircularStackText",
                 "text": f"{short_name} {mesoscale_prob}%"
             }
         ]
