@@ -94,8 +94,8 @@ def get_most_severe_watch(watches):
 
 
 def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
-    # Clean/shorten watch name if needed
-    watch_short = watch_name if len(watch_name) <= 10 else watch_name[:10] + "…"
+    # Shorten the watch name for small complications
+    watch_short = watch_name[:9]
 
     return {
         "name": "Grove Weather",
@@ -103,7 +103,7 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
         "views": [
             {
                 "type": "text",
-                "body": f"Watch: {watch_name}\nMesoscale Prob: {mesoscale_prob}%\nRain Prob: {max_rain_prob}%"
+                "body": f"Watch: {watch_name}\nMesoscale: {mesoscale_prob}%\nRain: {max_rain_prob}%"
             }
         ],
         "families": [
@@ -117,11 +117,41 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
                 "family": "modularLarge",
                 "class": "CLKComplicationTemplateModularLargeStandardBody",
                 "header": "Weather Alert",
-                "body1": watch_name,
+                "body1": f"Watch: {watch_name}",
                 "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
+            },
+            {
+                "family": "graphicRectangular",
+                "class": "CLKComplicationTemplateGraphicRectangularStandardBody",
+                "header": "Wx Alert",
+                "body1": f"Watch: {watch_short}",
+                "body2": f"Rain {max_rain_prob}%, Meso {mesoscale_prob}%"
+            },
+            {
+                "family": "graphicCircular",
+                "class": "CLKComplicationTemplateGraphicCircularStackText",
+                "line1": "Wx",
+                "line2": watch_short
+            },
+            {
+                "family": "utilitarianLarge",
+                "class": "CLKComplicationTemplateUtilitarianLargeFlat",
+                "text": f"{watch_short} • {mesoscale_prob}% • {max_rain_prob}%"
+            },
+            {
+                "family": "utilitarianSmall",
+                "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+                "text": f"{mesoscale_prob}%"
+            },
+            {
+                "family": "graphicCorner",
+                "class": "CLKComplicationTemplateGraphicCornerStackText",
+                "innerText": f"Rain {max_rain_prob}%",
+                "outerText": f"{watch_short}"
             }
         ]
     }
+
 
 
 def main():

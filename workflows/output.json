@@ -4,22 +4,51 @@
   "views": [
     {
       "type": "text",
-      "body": "Watch: Flood Watch\nMesoscale Prob: 0%\nRain Prob: 46%"
+      "body": "Watch: Flood Watch\nMesoscale: 0%\nRain: 46%"
     }
   ],
   "families": [
     {
       "family": "modularSmall",
       "class": "CLKComplicationTemplateModularSmallStackText",
-      "line1": "Flood Watc\u2026",
+      "line1": "Flood Wat",
       "line2": "0%"
     },
     {
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
       "header": "Weather Alert",
-      "body1": "Flood Watch",
+      "body1": "Watch: Flood Watch",
       "body2": "Mesoscale: 0%, Rain: 46%"
+    },
+    {
+      "family": "graphicRectangular",
+      "class": "CLKComplicationTemplateGraphicRectangularStandardBody",
+      "header": "Wx Alert",
+      "body1": "Watch: Flood Wat",
+      "body2": "Rain 46%, Meso 0%"
+    },
+    {
+      "family": "graphicCircular",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "Wx",
+      "line2": "Flood Wat"
+    },
+    {
+      "family": "utilitarianLarge",
+      "class": "CLKComplicationTemplateUtilitarianLargeFlat",
+      "text": "Flood Wat \u2022 0% \u2022 46%"
+    },
+    {
+      "family": "utilitarianSmall",
+      "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+      "text": "0%"
+    },
+    {
+      "family": "graphicCorner",
+      "class": "CLKComplicationTemplateGraphicCornerStackText",
+      "innerText": "Rain 46%",
+      "outerText": "Flood Wat"
     }
   ]
 }
