@@ -94,9 +94,21 @@ def get_most_severe_watch(watches):
 
 
 def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
-    watch_short = (watch_name[:9].strip() if watch_name else "None")
-    mesoscale_prob = int(float(mesoscale_prob)) if mesoscale_prob else 0
-    max_rain_prob = int(float(max_rain_prob)) if max_rain_prob else 0
+    # Shorten the watch name for small complications
+    watch_short = watch_name[:9]
+
+    # Simple heuristic for emoji based on watch name keywords
+    emoji_icon = "⚠️"  # default alert
+    if "Heat" in watch_name:
+        emoji_icon = "🌡️"
+    elif "Flood" in watch_name:
+        emoji_icon = "🌊"
+    elif "Tornado" in watch_name:
+        emoji_icon = "🌪️"
+    elif "Severe" in watch_name or "Storm" in watch_name:
+        emoji_icon = "⛈️"
+    elif "Winter" in watch_name or "Snow" in watch_name:
+        emoji_icon = "❄️"
 
     return {
         "name": "Grove Weather",
@@ -104,40 +116,40 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
         "views": [
             {
                 "type": "text",
-                "body": f"Watch: {watch_name}\nMesoscale: {mesoscale_prob}%\nRain: {max_rain_prob}%"
+                "body": f"{emoji_icon} Watch: {watch_name}\nMesoscale: {mesoscale_prob}%\nRain: {max_rain_prob}%"
             }
         ],
         "families": [
             {
                 "family": "modularSmall",
                 "class": "CLKComplicationTemplateModularSmallStackText",
-                "line1": watch_short,
+                "line1": f"{emoji_icon} {watch_short}",
                 "line2": f"{mesoscale_prob}%"
             },
             {
                 "family": "modularLarge",
                 "class": "CLKComplicationTemplateModularLargeStandardBody",
                 "header": "Weather Alert",
-                "body1": f"Watch: {watch_name}",
+                "body1": f"{emoji_icon} Watch: {watch_name}",
                 "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
             },
             {
                 "family": "graphicRectangular",
                 "class": "CLKComplicationTemplateGraphicRectangularStandardBody",
                 "header": "Wx Alert",
-                "body1": f"Watch: {watch_short}",
+                "body1": f"{emoji_icon} Watch: {watch_short}",
                 "body2": f"Rain {max_rain_prob}%, Meso {mesoscale_prob}%"
             },
             {
                 "family": "graphicCircular",
                 "class": "CLKComplicationTemplateGraphicCircularStackText",
-                "line1": "Wx",
+                "line1": f"{emoji_icon} Wx",
                 "line2": watch_short
             },
             {
                 "family": "utilitarianLarge",
                 "class": "CLKComplicationTemplateUtilitarianLargeFlat",
-                "text": f"{watch_short} • {mesoscale_prob}% • {max_rain_prob}%"
+                "text": f"{emoji_icon} {watch_short} • {mesoscale_prob}% • {max_rain_prob}%"
             },
             {
                 "family": "utilitarianSmall",
@@ -148,7 +160,7 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
                 "family": "graphicCorner",
                 "class": "CLKComplicationTemplateGraphicCornerStackText",
                 "innerText": f"Rain {max_rain_prob}%",
-                "outerText": f"{watch_short}"
+                "outerText": f"{emoji_icon} {watch_short}"
             }
         ]
     }
