@@ -22,11 +22,12 @@ def get_watches(lat, long):
 
     return watches 
 
-            
 
-
-# In[6]:
 def get_mesoscales(latitude, longitude):
+    import re
+    import feedparser
+    from shapely.geometry import Point, Polygon
+
     mesoscale_data = {
         "summary": None,
         "description": None,
@@ -35,42 +36,63 @@ def get_mesoscales(latitude, longitude):
 
     feed_url = "https://www.spc.noaa.gov/products/spcmdrss.xml"
     feed = feedparser.parse(feed_url)
-    pattern = r"Probability of Watch Issuance\.\.\.(\d+) percent"
+    pattern = r"Probability of Watch Issuance\.\.\.(\d+)\spercent"
 
     for item in feed.entries:
-        description = item.description
+        raw_desc = item.description
 
-        if "No Mesoscale Discussions are in effect" in description:
-            mesoscale_data["summary"] = "None"
-            mesoscale_data["probability"] = "0"
-            break
+        # Extract CDATA block inside <pre> tags
+        pre_match = re.search(r"<pre>(.*?)</pre>", raw_desc, re.DOTALL)
+        if not pre_match:
+            continue
 
-        elif "LAT...LON" in description:
-            coordinates_start = description.index("LAT...LON") + 9
-            coordinates_end = description.index("</pre>", coordinates_start)
-            coordinates_text = description[coordinates_start:coordinates_end].strip()
-            coordinates_list = coordinates_text.split()
+        pre_text = pre_match.group(1)
 
-            formatted_coordinates = [
-                [float(coord[:2] + "." + coord[2:4]), -float(coord[4:6] + "." + coord[6:8])]
-                for coord in coordinates_list
-            ]
+        # Get coordinates block (series of 8-digit LATLON strings)
+        coord_pattern = re.findall(r"\b\d{8}\b", pre_text)
+        if not coord_pattern:
+            continue
 
-            match = re.search(pattern, description)
-            polygon = Polygon(formatted_coordinates)
-            point = Point(latitude, longitude)
+        formatted_coordinates = []
+        for coord in coord_pattern:
+            try:
+                lat = float(coord[:2] + "." + coord[2:4])
+                lon = -float(coord[4:6] + "." + coord[6:8])
+                formatted_coordinates.append((lon, lat))  # Geo-style: (lon, lat)
+            except Exception:
+                continue
 
-            if polygon.contains(point):
-                summary_start = description.index("SUMMARY")
-                summary_end = description.index("DISCUSSION", summary_start)
-                summary = description[summary_start:summary_end].strip()
-                mesoscale_data["summary"] = summary
-                mesoscale_data["description"] = description
-                if match:
-                    mesoscale_data["probability"] = match.group(1)
-                    break
+        if len(formatted_coordinates) < 3:
+            continue
+
+        polygon = Polygon(formatted_coordinates)
+        point = Point(longitude, latitude)
+
+        if polygon.contains(point):
+            mesoscale_data["description"] = pre_text.strip()
+
+            # Get SUMMARY section
+            summary_match = re.search(r"SUMMARY\.\.\.(.*?)DISCUSSION", pre_text, re.DOTALL)
+            if summary_match:
+                mesoscale_data["summary"] = summary_match.group(1).strip()
+            else:
+                # fallback to start of message
+                mesoscale_data["summary"] = pre_text[:200].strip()
+
+            prob_match = re.search(pattern, pre_text)
+            if prob_match:
+                mesoscale_data["probability"] = prob_match.group(1)
+            else:
+                mesoscale_data["probability"] = "Unknown"
+
+            break  # exit after first matching polygon
+
+    if mesoscale_data["summary"] is None:
+        mesoscale_data["summary"] = "None"
+        mesoscale_data["probability"] = "0"
 
     return mesoscale_data
+
 
 
 
