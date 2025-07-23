@@ -51,38 +51,29 @@ def get_weather_summary(lat, lon):
 def simplify_for_complication(data):
     watches = data.get("watches", {})
     mesoscales = data.get("mesoscales", {})
-    risk = data.get("risk", {})
     forecast_data = data.get("forecast_data", {})
 
-    flags = {}
+    # Use the already calculated most severe watch if present, else fallback
+    watch_name = data.get("most_severe_watch")
+    if not watch_name:
+        watch_name = next(iter(watches), "None")
 
-    flags["mesoscale_active"] = 0 if mesoscales.get("summary") in [None, "None"] else 1
-    flags["mesoscale_probability"] = int(mesoscales.get("probability") or 0)
-
-    for day_key in ["day1", "day2", "day3"]:
-        level = risk.get(day_key, {}).get("risk_level")
-        flags[f"risk_{day_key}"] = 0 if level in [None, 0] else 1
+    mesoscale_prob = mesoscales.get("probability", "0")
 
     rainalerts = forecast_data.get("rainalerts", {})
-    flags["rain_alert"] = 1 if len(rainalerts) > 0 else 0
-
     max_rain_prob = 0
-    max_rain_date = None
-    for date, alert in rainalerts.items():
+    for alert in rainalerts.values():
         prob = alert.get("probability", 0)
         if prob and prob > max_rain_prob:
             max_rain_prob = prob
-            max_rain_date = date
 
-    flags["max_rain_probability"] = max_rain_prob
-    flags["max_rain_date"] = max_rain_date
+    # Return a dict (JSON serializable) with named keys
+    return {
+        "watch_name": watch_name,
+        "mesoscale_probability": mesoscale_prob,
+        "max_rain_probability": max_rain_prob
+    }
 
-    flags["updated"] = data.get("metadata", {}).get("updated", "")
-
-    flags["most_severe_watch"] = data.get("most_severe_watch", "")
-
-
-    return flags
 
 def get_most_severe_watch(watches):
     """
@@ -102,6 +93,37 @@ def get_most_severe_watch(watches):
     return most_severe_name
 
 
+def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
+    # Clean/shorten watch name if needed
+    watch_short = watch_name if len(watch_name) <= 10 else watch_name[:10] + "…"
+
+    return {
+        "name": "Grove Weather",
+        "showOnLockScreen": True,
+        "views": [
+            {
+                "type": "text",
+                "body": f"Watch: {watch_name}\nMesoscale Prob: {mesoscale_prob}%\nRain Prob: {max_rain_prob}%"
+            }
+        ],
+        "families": [
+            {
+                "family": "modularSmall",
+                "class": "CLKComplicationTemplateModularSmallStackText",
+                "line1": watch_short,
+                "line2": f"{mesoscale_prob}%"
+            },
+            {
+                "family": "modularLarge",
+                "class": "CLKComplicationTemplateModularLargeStandardBody",
+                "header": "Weather Alert",
+                "body1": watch_name,
+                "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
+            }
+        ]
+    }
+
+
 def main():
     latitude = os.getenv("LATITUDE")
     longitude = os.getenv("LONGITUDE")
@@ -111,16 +133,28 @@ def main():
     latitude = float(latitude)
     longitude = float(longitude)
 
+    # Get full weather data
     summary = get_weather_summary(latitude, longitude)
     print("Full detailed JSON:")
     print(json.dumps(summary, indent=2))
 
+    # Simplify to extract key fields for the complication
     simple = simplify_for_complication(summary)
-    print("\nSimplified JSON for complication:")
+    print("\nSimplified data:")
     print(json.dumps(simple, indent=2))
 
+    # Build the actual complication JSON for the watch
+    complication_json = build_complication_json(
+        simple["watch_name"],
+        simple["mesoscale_probability"],
+        simple["max_rain_probability"]
+    )
+    print("\nComplication JSON:")
+    print(json.dumps(complication_json, indent=2))
+
+    # Save complication JSON to file for app consumption
     with open("output.json", "w") as f:
-        json.dump(simple, f, indent=2)
+        json.dump(complication_json, f, indent=2)
 
 
 if __name__ == "__main__":
