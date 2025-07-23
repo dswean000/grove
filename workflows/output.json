@@ -1,36 +1,54 @@
 {
-  "name": "Let's go now2",
+  "name": "Grove Weather",
   "showOnLockScreen": true,
   "views": [
     {
       "type": "text",
-      "body": "Watch: Heat Advisory\nMesoscale: 0%\nRain: 42%"
+      "body": "Watch: Flood Watch\nMesoscale: 0%\nRain: 46%"
     }
   ],
   "families": [
     {
       "family": "modularSmall",
       "class": "CLKComplicationTemplateModularSmallStackText",
-      "line1": "Heat",
+      "line1": "Flood Wat",
       "line2": "0%"
     },
     {
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
-      "header": "Grove Wx",
-      "body1": "Heat Advisory",
-      "body2": "Mesoscale: 0%, Rain: 42%"
+      "header": "Weather Alert",
+      "body1": "Watch: Flood Watch",
+      "body2": "Mesoscale: 0%, Rain: 46%"
+    },
+    {
+      "family": "graphicRectangular",
+      "class": "CLKComplicationTemplateGraphicRectangularStandardBody",
+      "header": "Wx Alert",
+      "body1": "Watch: Flood Wat",
+      "body2": "Rain 46%, Meso 0%"
     },
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "Wx",
-      "line2": "Heat"
+      "line2": "Flood Wat"
+    },
+    {
+      "family": "utilitarianLarge",
+      "class": "CLKComplicationTemplateUtilitarianLargeFlat",
+      "text": "Flood Wat \u2022 0% \u2022 46%"
     },
     {
       "family": "utilitarianSmall",
       "class": "CLKComplicationTemplateUtilitarianSmallFlat",
-      "text": "Heat 0%"
+      "text": "0%"
+    },
+    {
+      "family": "graphicCorner",
+      "class": "CLKComplicationTemplateGraphicCornerStackText",
+      "innerText": "Rain 46%",
+      "outerText": "Flood Wat"
     }
   ]
 }
