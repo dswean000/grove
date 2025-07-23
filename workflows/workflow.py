@@ -143,7 +143,7 @@ def build_complication_json(watch_name, mesoscale_prob, max_rain_prob):
             {
                 "family": "graphicCircular",
                 "class": "CLKComplicationTemplateGraphicCircularStackText",
-                "line1": f"{emoji_icon} Wx",
+                "line1": f"{emoji_icon}",
                 "line2": watch_short
             },
             {
