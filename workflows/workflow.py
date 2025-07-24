@@ -313,6 +313,7 @@ def main():
 
     with open("output.json", "w") as f:
         json.dump(complication_json, f, indent=2)
+        print("✅ output.json updated at", datetime.now())
 
 if __name__ == "__main__":
     main()
