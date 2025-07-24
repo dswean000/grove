@@ -135,25 +135,24 @@ def parse_rainalert_start_time(start_time_str):
 
 
 
-def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
-    # Map numeric SPC risk levels to circle emojis by severity
+def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active):
     spc_emoji_map = {
-        0: "🟢",  # light green = no risk
-        1: "🟩",  # darker green = marginal (example)
-        2: "🟨",  # yellow = slight
-        3: "🟧",  # orange = enhanced
-        4: "🔴",  # red = moderate to high
+        0: "⚪",
+        1: "🟩",
+        2: "🛑",
+        3: "🛑",
+        4: "🛑",
     }
 
-    # If spc_risk is a dict, get risk_level else assume 0
-    risk_level = 0
-    if isinstance(spc_risk, dict):
-        risk_level = spc_risk.get("risk_level", 0)
-    elif isinstance(spc_risk, int):
-        risk_level = spc_risk
+    def get_risk_level(risk):
+        if isinstance(risk, dict):
+            return risk.get("risk_level", 0)
+        elif isinstance(risk, int):
+            return risk
+        else:
+            return 0
 
-    spc_emoji = spc_emoji_map.get(risk_level, "⚪")  # fallback white circle
-
+    spc_emoji = spc_emoji_map.get(get_risk_level(spc_day1_risk), "⚪")
     rain_emoji = "🌧️" if rain_in_3days else "⚪"
     watch_emoji = "⚠️" if has_watch else "⚪"
     mesoscale_emoji = "🛑" if mesoscale_active else "⚪"
@@ -166,31 +165,37 @@ def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
     }
 
 
-
 def build_complication_json(data):
     watch_name = data.get("watch_name", "None")
+    watches = data.get("watches", {})
     severity = data.get("severity", "Unknown")
     mesoscale_prob = data.get("mesoscale_probability", 0)
     max_rain_prob = data.get("max_rain_probability", 0)
+    max_rain_time = data.get("max_rain_time", "N/A")  # e.g. "Friday 07/25 at 12AM"
     rain_in_3days = data.get("rain_in_3days", False)
     has_watch = data.get("has_watch", False)
     mesoscale_active = data.get("mesoscale_active", False)
     spc_day1_risk = data.get("spc_day1_risk", {"description": "None", "risk_level": 0})
+    spc_day2_risk = data.get("spc_day2_risk", {"description": "None", "risk_level": 0})
 
     emoji = get_emoji_by_severity(severity)
-
     emoji_grid_complication = build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active)
 
-    # Format body text nicely
-    risk_desc = spc_day1_risk.get("description", "None")
-    risk_level = spc_day1_risk.get("risk_level", 0)
+    # Format active watches list as comma separated string
+    active_watches = ", ".join(watches.keys()) if watches else "None"
+
+    # SPC risk info
+    day1_desc = spc_day1_risk.get("description", "None")
+    day1_level = spc_day1_risk.get("risk_level", 0)
+    day2_desc = spc_day2_risk.get("description", "None")
+    day2_level = spc_day2_risk.get("risk_level", 0)
 
     body_text = (
-        f"{emoji} Watch: {watch_name}\n"
+        f"{emoji} Watches: {active_watches}\n"
         f"Mesoscale Probability: {mesoscale_prob}%\n"
-        f"Max Rain Probability (3 days): {max_rain_prob}%\n"
-        f"SPC Risk: {risk_desc} (Level {risk_level})\n"
-        f"Rain in 3 days: {'Yes' if rain_in_3days else 'No'}\n"
+        f"Max Rain: {max_rain_time} ({max_rain_prob}%)\n"
+        f"SPC Day 1 Risk: {day1_desc} (Level {day1_level})\n"
+        f"SPC Day 2 Risk: {day2_desc} (Level {day2_level})\n"
         f"Active Watch: {'Yes' if has_watch else 'No'}\n"
         f"Mesoscale Active: {'Yes' if mesoscale_active else 'No'}"
     )
@@ -208,6 +213,7 @@ def build_complication_json(data):
             emoji_grid_complication
         ]
     }
+
 
 
 def simplify_for_complication(data):

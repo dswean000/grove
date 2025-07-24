@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "\u26a0\ufe0f Watch: Flood Watch\nMesoscale Probability: 0%\nMax Rain Probability (3 days): 46%\nSPC Risk: Non-Severe T-Storms (Level 2)\nRain in 3 days: Yes\nActive Watch: Yes\nMesoscale Active: No"
+      "body": "\u26a0\ufe0f Watches: None\nMesoscale Probability: 0%\nMax Rain: N/A (46%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level 0)\nActive Watch: Yes\nMesoscale Active: No"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe8 \ud83c\udf27\ufe0f",
+      "line1": "\ud83d\uded1 \ud83c\udf27\ufe0f",
       "line2": "\u26a0\ufe0f \u26aa"
     }
   ]
