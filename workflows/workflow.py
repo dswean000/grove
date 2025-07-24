@@ -245,14 +245,14 @@ def simplify_for_complication(data):
     mesoscale_prob = mesoscales.get("probability", "0")
 
     rainalerts = forecast_data.get("rainalerts", {})
+    print(rainalerts)
 
     max_rain_prob = 0
     max_rain_time = "N/A"
     if rainalerts:
         first_alert = next(iter(rainalerts.values()))
         max_rain_prob = first_alert.get("probability", 0)
-        raw_time = first_alert.get("start_time", "N/A")
-        max_rain_time = parse_rainalert_start_time(raw_time)
+        max_rain_time = first_alert.get("start_time", "N/A")
 
     # rain_in_3days is True if any rain prob > 30% (your threshold)
     rain_in_3days = max_rain_prob > 30
