@@ -4,13 +4,13 @@
   "views": [
     {
       "type": "text",
-      "body": "body_text"
+      "body": "\u26a0\ufe0f Watch: Flood Watch\nMesoscale Probability: 0%\nMax Rain Probability (3 days): 46%\nSPC Day 1 Risk Level: None"
     }
   ],
   "families": [
     {
       "family": "modularSmall",
-      "class": "CLKComplicationTemplateModularSmallStackText",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe2\ud83c\udf27\ufe0f",
       "line2": "\u26a0\ufe0f"
     }

@@ -161,7 +161,7 @@ def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
 
     return {
         "family": "modularSmall",
-        "class": "CLKComplicationTemplateModularSmallStackText",
+        "class": "CLKComplicationTemplateGraphicCircularStackText",
         "line1": line1,
         "line2": line2
     }
@@ -199,7 +199,7 @@ def build_complication_json(data):
         "views": [
             {
                 "type": "text",
-                "body": "body_text"
+                "body": body_text
             }
         ],
         "families": [
