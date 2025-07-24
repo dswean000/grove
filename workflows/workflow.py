@@ -132,10 +132,6 @@ def parse_rainalert_start_time(start_time_str):
     except Exception:
         return "N/A"
 
-
-
-
-
 def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active):
     spc_emoji_map = {
         0: "⚪",
@@ -203,15 +199,18 @@ def build_complication_json(data):
     central_time = datetime.now(ZoneInfo("America/Chicago"))
     formatted_time = format_timestamp(central_time)
 
+    meso_active = data.get('mesoscale_active')
+    meso_active_str = "Yes" if meso_active else "No"
+    meso_prob_line = f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%" if meso_active else ""
 
     body_text = (
         f"{formatted_time}\n"
         f"{emoji} Watches: {active_watches}\n"
-        f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%\n"
+        f"Mesoscale Active: {meso_active_str}\n"
+        f"{meso_prob_line}\n"
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
         f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
-        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
-        f"Mesoscale Active: {'Yes' if data.get('mesoscale_active') else 'No'}"
+        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})"
     )
 
     return {
@@ -249,18 +248,14 @@ def simplify_for_complication(data):
 
     max_rain_prob = 0
     max_rain_time = "N/A"
+    if rainalerts:
+        first_alert = next(iter(rainalerts.values()))
+        max_rain_prob = first_alert.get("probability", 0)
+        raw_time = first_alert.get("start_time", "N/A")
+        max_rain_time = parse_rainalert_start_time(raw_time)
 
-    # Find the rainalert with the highest probability and get its start time
-    for alert in rainalerts.values():
-        prob = alert.get("probability", 0)
-        if prob and prob > max_rain_prob:
-            max_rain_prob = prob
-            raw_time = alert.get("start_time", "N/A")
-            max_rain_time = parse_rainalert_start_time(raw_time)
-
-
-    # rain_in_3days is True if any rain prob > 20% (your threshold)
-    rain_in_3days = max_rain_prob > 20
+    # rain_in_3days is True if any rain prob > 30% (your threshold)
+    rain_in_3days = max_rain_prob > 30
 
     # has_watch = True if any watch/warning active
     has_watch = bool(watch_name)
@@ -287,6 +282,7 @@ def simplify_for_complication(data):
         "spc_day2_risk": spc_day2_risk,
         "watches": watches
     }
+
 
 def main():
     latitude = os.getenv("LATITUDE")
