@@ -311,10 +311,13 @@ def main():
     print("\nComplication JSON:")
     print(json.dumps(complication_json, indent=2))
 
-    with open("output.json", "w") as f:
+    output_path = os.path.join(os.path.dirname(__file__), 'output.json')
+    print(f"Writing to: {os.path.abspath(output_path)}")
+
+    with open(output_path, "w") as f:
         json.dump(complication_json, f, indent=2)
         print("✅ output.json updated at", datetime.now())
-        print(f"Writing to: {os.path.abspath(output_path)}")
+
 
 
 if __name__ == "__main__":
