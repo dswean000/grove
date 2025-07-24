@@ -160,7 +160,7 @@ def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
     line2 = watch_emoji + mesoscale_emoji
 
     return {
-        "family": "modularSmall",
+        "family": "graphicCircular",
         "class": "CLKComplicationTemplateGraphicCircularStackText",
         "line1": line1,
         "line2": line2

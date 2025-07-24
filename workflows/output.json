@@ -9,7 +9,7 @@
   ],
   "families": [
     {
-      "family": "modularSmall",
+      "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe2\ud83c\udf27\ufe0f",
       "line2": "\u26a0\ufe0f"
