@@ -97,7 +97,6 @@ def parse_rainalert_start_time(start_time_str):
 
 
 def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
-    # If active mesoscale discussion, override with ⚠️
     if int(mesoscale_prob) > 0:
         return {
             "family": "graphicCircular",
@@ -106,18 +105,14 @@ def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
             "line2": "Mesoscale"
         }
 
-    # Default label if no date
     line2 = "Dry"
     if next_rain_date:
         try:
-            # Try parsing ISO with time first
-            if "T" in next_rain_date:
-                dt = datetime.strptime(next_rain_date, "%Y-%m-%dT%H:%M:%S")
-            else:
-                dt = datetime.strptime(next_rain_date, "%Y-%m-%d")
-
-            # Windows needs %#I (not %-I like on Unix)
-            line2 = dt.strftime("%a %#I%p")  # e.g. "Thu 4PM"
+            # Remove weekday (first word) before parsing:
+            parts = next_rain_date.split(" ", 1)  # split off the weekday
+            date_time_part = parts[1] if len(parts) > 1 else next_rain_date
+            dt = datetime.strptime(date_time_part, "%m/%d at %I%p")
+            line2 = dt.strftime("%a %#I%p")  # e.g. "Fri 12AM"
         except Exception as e:
             print(f"Failed to parse next_rain_date: {next_rain_date} ({e})")
 
@@ -127,6 +122,7 @@ def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
         "line1": "🌧️",
         "line2": line2
     }
+
 
 
 
@@ -202,6 +198,8 @@ def simplify_for_complication(data):
             max_rain_prob = prob
             next_rain_date = alert.get("start_time")  # e.g. "Thursday 07/24 at 01PM"
             next_rain_prob = prob
+    print("DEBUG next_rain_date:", next_rain_date)
+    print("DEBUG next_rain_prob:", next_rain_prob)
 
     return {
         "watch_name": watch_name,
