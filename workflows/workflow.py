@@ -138,10 +138,11 @@ def parse_rainalert_start_time(start_time_str):
 def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active):
     spc_emoji_map = {
         0: "⚪",
-        1: "🟩",
-        2: "🛑",
-        3: "🛑",
+        1: "⚪",
+        2: "🟩",
+        3: "🟡",
         4: "🛑",
+        5: "🛑",
     }
 
     def get_risk_level(risk):
@@ -166,38 +167,41 @@ def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_acti
 
 
 def build_complication_json(data):
-    watch_name = data.get("watch_name", "None")
     watches = data.get("watches", {})
-    severity = data.get("severity", "Unknown")
-    mesoscale_prob = data.get("mesoscale_probability", 0)
-    max_rain_prob = data.get("max_rain_probability", 0)
-    max_rain_time = data.get("max_rain_time", "N/A")  # e.g. "Friday 07/25 at 12AM"
-    rain_in_3days = data.get("rain_in_3days", False)
-    has_watch = data.get("has_watch", False)
-    mesoscale_active = data.get("mesoscale_active", False)
-    spc_day1_risk = data.get("spc_day1_risk", {"description": "None", "risk_level": 0})
-    spc_day2_risk = data.get("spc_day2_risk", {"description": "None", "risk_level": 0})
+    has_watch = bool(watches)  # Ensure this reflects reality
 
-    emoji = get_emoji_by_severity(severity)
-    emoji_grid_complication = build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active)
+    complication_data = {
+        "watch_name": data.get("watch_name", "None"),
+        "watches": watches,
+        "severity": data.get("severity", "Unknown"),
+        "mesoscale_probability": data.get("mesoscale_probability", 0),
+        "max_rain_probability": data.get("max_rain_probability", 0),
+        "max_rain_time": data.get("max_rain_time", "N/A"),
+        "rain_in_3days": data.get("rain_in_3days", False),
+        "has_watch": has_watch,
+        "mesoscale_active": data.get("mesoscale_active", False),
+        "spc_day1_risk": data.get("spc_day1_risk", {"description": "None", "risk_level": 0}),
+        "spc_day2_risk": data.get("spc_day2_risk", {"description": "None", "risk_level": 0}),
+    }
 
-    # Format active watches list as comma separated string
+    emoji = get_emoji_by_severity(complication_data["severity"])
+    emoji_grid = build_2x2_emoji_grid(
+        complication_data["spc_day1_risk"],
+        complication_data["rain_in_3days"],
+        complication_data["has_watch"],
+        complication_data["mesoscale_active"]
+    )
+
     active_watches = ", ".join(watches.keys()) if watches else "None"
-
-    # SPC risk info
-    day1_desc = spc_day1_risk.get("description", "None")
-    day1_level = spc_day1_risk.get("risk_level", 0)
-    day2_desc = spc_day2_risk.get("description", "None")
-    day2_level = spc_day2_risk.get("risk_level", 0)
 
     body_text = (
         f"{emoji} Watches: {active_watches}\n"
-        f"Mesoscale Probability: {mesoscale_prob}%\n"
-        f"Max Rain: {max_rain_time} ({max_rain_prob}%)\n"
-        f"SPC Day 1 Risk: {day1_desc} (Level {day1_level})\n"
-        f"SPC Day 2 Risk: {day2_desc} (Level {day2_level})\n"
-        f"Active Watch: {'Yes' if has_watch else 'No'}\n"
-        f"Mesoscale Active: {'Yes' if mesoscale_active else 'No'}"
+        f"Mesoscale Probability: {complication_data['mesoscale_probability']}%\n"
+        f"Rain Chance: {complication_data['max_rain_time']} ({complication_data['max_rain_probability']}%)\n"
+        f"SPC Day 1 Risk: {complication_data['spc_day1_risk']['description']} (Level {complication_data['spc_day1_risk']['risk_level']})\n"
+        f"SPC Day 2 Risk: {complication_data['spc_day2_risk']['description']} (Level {complication_data['spc_day2_risk']['risk_level']})\n"
+        f"Active Watch: {'Yes' if complication_data['has_watch'] else 'No'}\n"
+        f"Mesoscale Active: {'Yes' if complication_data['mesoscale_active'] else 'No'}"
     )
 
     return {
@@ -210,9 +214,10 @@ def build_complication_json(data):
             }
         ],
         "families": [
-            emoji_grid_complication
+            emoji_grid
         ]
     }
+
 
 
 
