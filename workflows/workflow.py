@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timezone
 from main import get_watches, get_mesoscales, get_max_risk, get_forecast
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 
 load_dotenv("locations.env")
 
@@ -185,15 +186,21 @@ def build_complication_json(data):
         )
     else:
         active_watches = "None"
+    try:
+        from zoneinfo import ZoneInfo  # Python 3.9+
+    except ImportError:
+        from backports.zoneinfo import ZoneInfo
 
     # Format timestamp
     def format_timestamp(dt):
         if sys.platform.startswith('win'):
-            return dt.strftime("%a %m/%d %#I:%M%p UTC")
+            return dt.strftime("%a %m/%d %#I:%M%p CT")
         else:
-            return dt.strftime("%a %m/%d %-I:%M%p UTC")
+            return dt.strftime("%a %m/%d %-I:%M%p CT")
 
-    formatted_time = format_timestamp(datetime.now(timezone.utc))
+    central_time = datetime.now(ZoneInfo("America/Chicago"))
+    formatted_time = format_timestamp(central_time)
+
 
     body_text = (
         f"{formatted_time}\n"
@@ -202,7 +209,6 @@ def build_complication_json(data):
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
         f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
         f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
-        f"Active Watch: {'Yes' if has_watch else 'No'}\n"
         f"Mesoscale Active: {'Yes' if data.get('mesoscale_active') else 'No'}"
     )
 
@@ -247,7 +253,9 @@ def simplify_for_complication(data):
         prob = alert.get("probability", 0)
         if prob and prob > max_rain_prob:
             max_rain_prob = prob
-            max_rain_time = alert.get("start_time", "N/A")
+            raw_time = alert.get("start_time", "N/A")
+            max_rain_time = parse_rainalert_start_time(raw_time)
+
 
     # rain_in_3days is True if any rain prob > 20% (your threshold)
     rain_in_3days = max_rain_prob > 20
