@@ -82,32 +82,48 @@ def get_short_watch_name(full_name):
 def get_emoji_by_severity(severity):
     return SEVERITY_EMOJI.get(severity, "❓")
 
-def build_rain_graphic_circular(next_rain_date_str, rain_prob):
-    if not next_rain_date_str:
+def build_rain_graphic_circular(next_rain_datetime_str, rain_prob, mesoscale_prob):
+    # Show alert if mesoscale discussion is active
+    if mesoscale_prob and int(mesoscale_prob) > 0:
+        return {
+            "family": "graphicCircular",
+            "class": "CLKComplicationTemplateGraphicCircularStackText",
+            "line1": "⚠️",
+            "line2": "MESOSCALE"
+        }
+
+    # Fallback to rain forecast
+    if not next_rain_datetime_str:
         return {
             "family": "graphicCircular",
             "class": "CLKComplicationTemplateGraphicCircularStackText",
             "line1": "🌞",
-            "line2": "Dry"
+            "line2": "DRY"
         }
 
     try:
-        day_str = datetime.strptime(next_rain_date_str, "%Y-%m-%d").strftime("%a")  # e.g. "Tue"
+        dt = datetime.strptime(next_rain_datetime_str, "%Y-%m-%dT%H:%M:%S")
+        day_str = dt.strftime("%a").upper()
+        hour_str = dt.strftime("%-I%p").upper()  # Use %-I on Unix, %#I on Windows
+        time_str = f"{day_str} {hour_str}"
     except Exception:
-        day_str = "N/A"
+        time_str = "N/A"
 
     return {
         "family": "graphicCircular",
         "class": "CLKComplicationTemplateGraphicCircularStackText",
         "line1": "🌧️",
-        "line2": f"{day_str} {rain_prob}%"
+        "line2": f"{time_str}"
     }
+
+
 
 def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob, next_rain_date=None, next_rain_prob=0):
     short_name = get_short_watch_name(watch_name)
     emoji = get_emoji_by_severity(severity)
 
-    rain_complication = build_rain_graphic_circular(next_rain_date, next_rain_prob)
+    rain_complication = build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob)
+
 
     return {
         "name": "Grove Weather",

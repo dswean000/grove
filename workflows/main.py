@@ -2,7 +2,7 @@ def get_watches(lat, long):
     alerts_url = f"https://api.weather.gov/alerts?active=true&point={lat},{long}"
     alerts_response = requests.get(alerts_url).json()
     
-    print(alerts_response)
+    #print(alerts_response)
     watches = {}  # Initialize watches as an empty dictionary
 
     for feature in alerts_response['features']:
