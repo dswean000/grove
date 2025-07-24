@@ -36,7 +36,7 @@ jobs:
       - name: Show updated JSON
         run: cat workflows/output.json
       
-      - name: Debug: show git diff
+      - name: Debug show git diff
         run: git diff workflows/output.json
 
       - name: Commit and push updated complication JSON
