@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "\u2753 Watches: Flood Watch\nMesoscale Probability: 0%\nRain Chance: N/A (0%)\nSPC Day 1 Risk: None (Level 0)\nSPC Day 2 Risk: None (Level 0)\nActive Watch: Yes\nMesoscale Active: No"
+      "body": "\u26a0\ufe0f Watches: Flood Watch issued July 23 at 2:49PM CDT until July 25 at 10:00AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Probability: 0%\nRain Chance: Friday 07/25 at 12AM (46%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Marginal Risk (Level 3)\nActive Watch: Yes\nMesoscale Active: No"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\u26aa \u26aa",
+      "line1": "\ud83d\udfe9 \ud83c\udf27\ufe0f",
       "line2": "\u26a0\ufe0f \u26aa"
     }
   ]

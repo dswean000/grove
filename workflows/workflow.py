@@ -168,49 +168,32 @@ def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_acti
 
 def build_complication_json(data):
     watches = data.get("watches", {})
-    has_watch = bool(watches)  # Ensure this reflects reality
+    has_watch = bool(watches)
 
-    complication_data = {
-        "watch_name": data.get("watch_name", "None"),
-        "watches": watches,
-        "severity": data.get("severity", "Unknown"),
-        "mesoscale_probability": data.get("mesoscale_probability", 0),
-        "max_rain_probability": data.get("max_rain_probability", 0),
-        "max_rain_time": data.get("max_rain_time", "N/A"),
-        "rain_in_3days": data.get("rain_in_3days", False),
-        "has_watch": has_watch,
-        "mesoscale_active": data.get("mesoscale_active", False),
-        "spc_day1_risk": data.get("spc_day1_risk", {"description": "None", "risk_level": 0}),
-        "spc_day2_risk": data.get("spc_day2_risk", {"description": "None", "risk_level": 0}),
-    }
-
-    emoji = get_emoji_by_severity(complication_data["severity"])
+    emoji = get_emoji_by_severity(data.get("severity", "Unknown"))
     emoji_grid = build_2x2_emoji_grid(
-        complication_data["spc_day1_risk"],
-        complication_data["rain_in_3days"],
-        complication_data["has_watch"],
-        complication_data["mesoscale_active"]
+        data.get("spc_day1_risk"),
+        data.get("rain_in_3days"),
+        has_watch,
+        data.get("mesoscale_active")
     )
 
     if watches and isinstance(watches, dict):
         active_watches = ", ".join(
-            watch.get("name", key) for key, watch in watches.items()
-        ) if watches else "None"
-
-        has_watch = True
+            watch.get("headline", key) if isinstance(watch, dict) else key
+            for key, watch in watches.items()
+        )
     else:
         active_watches = "None"
-        has_watch = False
-
 
     body_text = (
         f"{emoji} Watches: {active_watches}\n"
-        f"Mesoscale Probability: {complication_data['mesoscale_probability']}%\n"
-        f"Rain Chance: {complication_data['max_rain_time']} ({complication_data['max_rain_probability']}%)\n"
-        f"SPC Day 1 Risk: {complication_data['spc_day1_risk']['description']} (Level {complication_data['spc_day1_risk']['risk_level']})\n"
-        f"SPC Day 2 Risk: {complication_data['spc_day2_risk']['description']} (Level {complication_data['spc_day2_risk']['risk_level']})\n"
-        f"Active Watch: {'Yes' if complication_data['has_watch'] else 'No'}\n"
-        f"Mesoscale Active: {'Yes' if complication_data['mesoscale_active'] else 'No'}"
+        f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%\n"
+        f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
+        f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
+        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
+        f"Active Watch: {'Yes' if has_watch else 'No'}\n"
+        f"Mesoscale Active: {'Yes' if data.get('mesoscale_active') else 'No'}"
     )
 
     return {
@@ -227,32 +210,52 @@ def build_complication_json(data):
         ]
     }
 
+def simplify_for_complication(data):
+    watches = data.get("watches", {})
+    mesoscales = data.get("mesoscales", {})
+    forecast_data = data.get("forecast_data", {})
+    risk = data.get("risk", {})
 
+    watch_name = data.get("most_severe_watch")
+    severity = "Unknown"
+    if not watch_name and watches:
+        watch_name = next(iter(watches), "None")
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
+    elif watch_name:
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
 
+    mesoscale_prob = mesoscales.get("probability", "0")
 
-def simplify_for_complication(weather_summary):
-    watches = weather_summary.get("watches", {})
-    watch_name = next(iter(watches.keys()), "None")
-    severity = weather_summary.get("severity", "Unknown")
-    mesoscale = weather_summary.get("mesoscale", {})
-    mesoscale_prob = mesoscale.get("probability", 0)
-    mesoscale_active = mesoscale.get("active", False)
+    rainalerts = forecast_data.get("rainalerts", {})
 
-    rain = weather_summary.get("rain", {})
-    max_rain_prob = rain.get("max_probability", 0)
-    max_rain_time = rain.get("max_time", "N/A")
-    rain_in_3days = rain.get("in_next_3_days", False)
+    max_rain_prob = 0
+    max_rain_time = "N/A"
 
-    has_watch = bool(watches)
+    # Find the rainalert with the highest probability and get its start time
+    for alert in rainalerts.values():
+        prob = alert.get("probability", 0)
+        if prob and prob > max_rain_prob:
+            max_rain_prob = prob
+            max_rain_time = alert.get("start_time", "N/A")
 
-    risk = weather_summary.get("spc_risk", {})
+    # rain_in_3days is True if any rain prob > 20% (your threshold)
+    rain_in_3days = max_rain_prob > 20
+
+    # has_watch = True if any watch/warning active
+    has_watch = bool(watch_name)
+
+    # mesoscale_active = True if mesoscale probability > 0
+    try:
+        mesoscale_active = int(mesoscale_prob) > 0
+    except Exception:
+        mesoscale_active = False
+
     spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
     spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
 
     return {
         "watch_name": watch_name,
         "severity": severity,
-        "watches": watches,
         "mesoscale_probability": mesoscale_prob,
         "max_rain_probability": max_rain_prob,
         "max_rain_time": max_rain_time,
@@ -260,8 +263,10 @@ def simplify_for_complication(weather_summary):
         "has_watch": has_watch,
         "mesoscale_active": mesoscale_active,
         "spc_day1_risk": spc_day1_risk,
-        "spc_day2_risk": spc_day2_risk
+        "spc_day2_risk": spc_day2_risk,
+        "watches": watches
     }
+
 
 
 
