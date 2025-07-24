@@ -136,61 +136,63 @@ def parse_rainalert_start_time(start_time_str):
 
 
 def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
-    # Map SPC risk to colored circle emoji
+    # Map numeric SPC risk levels to circle emojis by severity
     spc_emoji_map = {
-        "None": "🟢",
-        "Low": "🟩",
-        "Moderate": "🟨",
-        "Enhanced": "🟧",
-        "High": "🔴"
+        0: "🟢",  # light green = no risk
+        1: "🟩",  # darker green = marginal (example)
+        2: "🟨",  # yellow = slight
+        3: "🟧",  # orange = enhanced
+        4: "🔴",  # red = moderate to high
     }
-    spc_emoji = spc_emoji_map.get(spc_risk, "⚪")  # default white circle if unknown
 
-    # Raindrop emoji if rain in next 3 days, else empty
-    rain_emoji = "🌧️" if rain_in_3days else ""
+    # If spc_risk is a dict, get risk_level else assume 0
+    risk_level = 0
+    if isinstance(spc_risk, dict):
+        risk_level = spc_risk.get("risk_level", 0)
+    elif isinstance(spc_risk, int):
+        risk_level = spc_risk
 
-    # Watch triangle emoji if watch/warning active
-    watch_emoji = "⚠️" if has_watch else ""
+    spc_emoji = spc_emoji_map.get(risk_level, "⚪")  # fallback white circle
 
-    # Red stop sign if mesoscale active
-    mesoscale_emoji = "🛑" if mesoscale_active else ""
-
-    # Build two lines with up to 2 emojis each, no spaces
-    line1 = spc_emoji + rain_emoji
-    line2 = watch_emoji + mesoscale_emoji
+    rain_emoji = "🌧️" if rain_in_3days else "⚪"
+    watch_emoji = "⚠️" if has_watch else "⚪"
+    mesoscale_emoji = "🛑" if mesoscale_active else "⚪"
 
     return {
         "family": "graphicCircular",
         "class": "CLKComplicationTemplateGraphicCircularStackText",
-        "line1": line1,
-        "line2": line2
+        "line1": f"{spc_emoji} {rain_emoji}",
+        "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
 
 
-def build_complication_json(data):
-    # Unpack and ensure spc_day1_risk is a string
-    spc_day1_risk = data.get("spc_day1_risk", "None")
-    if isinstance(spc_day1_risk, dict):
-        spc_day1_risk = spc_day1_risk.get("risk", "None")
 
+def build_complication_json(data):
     watch_name = data.get("watch_name", "None")
     severity = data.get("severity", "Unknown")
-    mesoscale_prob = data.get("mesoscale_probability", "0")
+    mesoscale_prob = data.get("mesoscale_probability", 0)
     max_rain_prob = data.get("max_rain_probability", 0)
     rain_in_3days = data.get("rain_in_3days", False)
     has_watch = data.get("has_watch", False)
     mesoscale_active = data.get("mesoscale_active", False)
+    spc_day1_risk = data.get("spc_day1_risk", {"description": "None", "risk_level": 0})
 
-    short_name = get_short_watch_name(watch_name)
     emoji = get_emoji_by_severity(severity)
 
     emoji_grid_complication = build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active)
+
+    # Format body text nicely
+    risk_desc = spc_day1_risk.get("description", "None")
+    risk_level = spc_day1_risk.get("risk_level", 0)
 
     body_text = (
         f"{emoji} Watch: {watch_name}\n"
         f"Mesoscale Probability: {mesoscale_prob}%\n"
         f"Max Rain Probability (3 days): {max_rain_prob}%\n"
-        f"SPC Day 1 Risk Level: {spc_day1_risk}"
+        f"SPC Risk: {risk_desc} (Level {risk_level})\n"
+        f"Rain in 3 days: {'Yes' if rain_in_3days else 'No'}\n"
+        f"Active Watch: {'Yes' if has_watch else 'No'}\n"
+        f"Mesoscale Active: {'Yes' if mesoscale_active else 'No'}"
     )
 
     return {
@@ -206,9 +208,6 @@ def build_complication_json(data):
             emoji_grid_complication
         ]
     }
-
-
-
 
 
 def simplify_for_complication(data):
