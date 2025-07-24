@@ -33,20 +33,25 @@ jobs:
           LATITUDE: '39.02206'
           LONGITUDE: '-94.8478'
 
-      - name: Show updated JSON
-        run: cat workflows/output.json
+      - name: Check output.json content
+        run: |
+          echo "Contents of output.json after script:"
+          cat workflows/output.json
       
       - name: Debug show git diff
         run: git diff workflows/output.json
 
       - name: Commit and push updated complication JSON
         run: |
-          set -e
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add workflows/output.json
-          git diff --cached --quiet || git commit -m "Update complication output.json [skip ci]"
+          git add -u workflows/output.json
+          git status
+          git diff --cached --exit-code || git commit -m "Update complication output.json [skip ci]"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Force commit test
         run: |
           git config user.name "github-actions[bot]"

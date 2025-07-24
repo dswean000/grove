@@ -314,6 +314,8 @@ def main():
     with open("output.json", "w") as f:
         json.dump(complication_json, f, indent=2)
         print("✅ output.json updated at", datetime.now())
+        print(f"Writing to: {os.path.abspath(output_path)}")
+
 
 if __name__ == "__main__":
     main()
