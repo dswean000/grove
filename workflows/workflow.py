@@ -140,10 +140,12 @@ def build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_acti
     spc_emoji_map = {
         0: "⚪",
         1: "⚪",
-        2: "🟩",
-        3: "🟡",
-        4: "🛑",
-        5: "🛑",
+        2: "⚪", #tstrm
+        3: "🟢", #MRGL
+        4: "🟡", #Slight
+        5: "🟠", #Enhanced
+        6: "🛑", #MDT
+        7: "🔴", #HIGH
     }
 
     def get_risk_level(risk):
@@ -275,20 +277,16 @@ def simplify_for_complication(data):
     return {
         "watch_name": watch_name,
         "severity": severity,
+        "mesoscale_active": mesoscale_active,
         "mesoscale_probability": mesoscale_prob,
         "max_rain_probability": max_rain_prob,
         "max_rain_time": max_rain_time,
         "rain_in_3days": rain_in_3days,
         "has_watch": has_watch,
-        "mesoscale_active": mesoscale_active,
         "spc_day1_risk": spc_day1_risk,
         "spc_day2_risk": spc_day2_risk,
         "watches": watches
     }
-
-
-
-
 
 def main():
     latitude = os.getenv("LATITUDE")
