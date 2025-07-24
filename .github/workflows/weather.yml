@@ -8,8 +8,12 @@ on:
 jobs:
   run-weather:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main  # Make sure we're on a pushable branch
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,17 +26,21 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run weather script
-        run: python workflows/workflow.py
+        run: |
+          python workflows/workflow.py
+          echo "Script executed at $(date -u)"
         env:
           LATITUDE: '39.02206'
           LONGITUDE: '-94.8478'
 
+      - name: Show updated JSON
+        run: cat workflows/output.json
+
       - name: Commit and push updated complication JSON
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add workflows/output.json
           git diff --cached --quiet || git commit -m "Update complication output.json [skip ci]"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
