@@ -2,7 +2,7 @@ name: Weather Cron Job
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # runs every 30 minutes
+    - cron: '*/15 * * * *'  # runs every 15 minutes
   workflow_dispatch:        # allows manual runs too
 
 jobs:
@@ -25,7 +25,12 @@ jobs:
 
       - name: Run weather script
         run: python workflows/workflow.py
-
         env:
           LATITUDE: '39.02206'
           LONGITUDE: '-94.8478'
+
+      - name: Upload JSON artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: complication-json
+          path: workflows/output.json
