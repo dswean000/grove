@@ -199,7 +199,7 @@ def build_complication_json(data):
         "views": [
             {
                 "type": "text",
-                "body": body_text
+                "body": "body_text"
             }
         ],
         "families": [

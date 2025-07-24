@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "\u26a0\ufe0f Watch: Flood Watch\nMesoscale Probability: 0%\nMax Rain Probability (3 days): 46%\nSPC Day 1 Risk Level: None"
+      "body": "body_text"
     }
   ],
   "families": [
