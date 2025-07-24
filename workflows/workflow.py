@@ -168,13 +168,11 @@ def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
 
 
 def build_complication_json(data):
-    # Unpack and normalize spc_day1_risk to string if it's a dict
+    # Unpack and ensure spc_day1_risk is a string
     spc_day1_risk = data.get("spc_day1_risk", "None")
     if isinstance(spc_day1_risk, dict):
-        # Example: spc_day1_risk = {"risk": "Moderate", ...}
         spc_day1_risk = spc_day1_risk.get("risk", "None")
-    
-    # Rest of unpacking...
+
     watch_name = data.get("watch_name", "None")
     severity = data.get("severity", "Unknown")
     mesoscale_prob = data.get("mesoscale_probability", "0")
@@ -208,6 +206,7 @@ def build_complication_json(data):
             emoji_grid_complication
         ]
     }
+
 
 
 
