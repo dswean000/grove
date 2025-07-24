@@ -1,0 +1,42 @@
+{
+  "name": "Grove Weather",
+  "showOnLockScreen": true,
+  "views": [
+    {
+      "type": "text",
+      "body": "\u26a0\ufe0f Watch: Flood Watch\nMesoscale: 0%\nRain: 46%"
+    }
+  ],
+  "families": [
+    {
+      "family": "modularSmall",
+      "class": "CLKComplicationTemplateModularSmallStackText",
+      "line1": "Flood",
+      "line2": "0%"
+    },
+    {
+      "family": "modularLarge",
+      "class": "CLKComplicationTemplateModularLargeStandardBody",
+      "header": "Grove Wx",
+      "body1": "Flood Watch",
+      "body2": "Mesoscale: 0%, Rain: 46%"
+    },
+    {
+      "family": "graphicCircular",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "\u26a0\ufe0f",
+      "line2": "Flood"
+    },
+    {
+      "family": "graphicCircular",
+      "class": "CLKComplicationTemplateGraphicCircularStackText",
+      "line1": "\ud83c\udf27\ufe0f",
+      "line2": "Dry"
+    },
+    {
+      "family": "utilitarianSmall",
+      "class": "CLKComplicationTemplateUtilitarianSmallFlat",
+      "text": "Flood 0%"
+    }
+  ]
+}

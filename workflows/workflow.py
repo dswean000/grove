@@ -82,6 +82,19 @@ def get_short_watch_name(full_name):
 def get_emoji_by_severity(severity):
     return SEVERITY_EMOJI.get(severity, "❓")
 
+def parse_rainalert_start_time(start_time_str):
+    # Example input: "Thursday 07/24 at 01PM"
+    try:
+        # Remove "Thursday " prefix to parse just "07/24 at 01PM"
+        # Or parse whole string with a matching format string:
+        dt = datetime.strptime(start_time_str, "%A %m/%d at %I%p")
+        # Format as "Thu 1PM"
+        return dt.strftime("%a %#I%p")  # Use %-I on Unix/macOS, %#I on Windows
+    except Exception:
+        return "N/A"
+
+
+
 
 def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
     # If active mesoscale discussion, override with ⚠️
@@ -178,32 +191,27 @@ def simplify_for_complication(data):
     mesoscale_prob = mesoscales.get("probability", "0")
 
     rainalerts = forecast_data.get("rainalerts", {})
+
     max_rain_prob = 0
     next_rain_date = None
     next_rain_prob = 0
 
-    for alert_date_str, alert in rainalerts.items():
+    for date_str, alert in rainalerts.items():
         prob = alert.get("probability", 0)
         if prob and prob > max_rain_prob:
             max_rain_prob = prob
-        try:
-            alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d")
-            if (not next_rain_date or alert_date < next_rain_date) and prob > 0:
-                next_rain_date = alert_date
-                next_rain_prob = prob
-        except Exception:
-            continue
-
-    next_rain_date_str = next_rain_date.strftime("%Y-%m-%d") if next_rain_date else None
+            next_rain_date = alert.get("start_time")  # e.g. "Thursday 07/24 at 01PM"
+            next_rain_prob = prob
 
     return {
         "watch_name": watch_name,
         "severity": severity,
         "mesoscale_probability": mesoscale_prob,
         "max_rain_probability": max_rain_prob,
-        "next_rain_date": next_rain_date_str,
+        "next_rain_date": next_rain_date,
         "next_rain_probability": next_rain_prob,
     }
+
 
 def main():
     latitude = os.getenv("LATITUDE")
