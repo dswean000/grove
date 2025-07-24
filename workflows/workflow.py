@@ -192,7 +192,16 @@ def build_complication_json(data):
         complication_data["mesoscale_active"]
     )
 
-    active_watches = ", ".join(watches.keys()) if watches else "None"
+    if watches and isinstance(watches, dict):
+        active_watches = ", ".join(
+            watch.get("name", key) for key, watch in watches.items()
+        ) if watches else "None"
+
+        has_watch = True
+    else:
+        active_watches = "None"
+        has_watch = False
+
 
     body_text = (
         f"{emoji} Watches: {active_watches}\n"
@@ -221,55 +230,39 @@ def build_complication_json(data):
 
 
 
-def simplify_for_complication(data):
-    watches = data.get("watches", {})
-    mesoscales = data.get("mesoscales", {})
-    forecast_data = data.get("forecast_data", {})
-    risk = data.get("risk", {})
+def simplify_for_complication(weather_summary):
+    watches = weather_summary.get("watches", {})
+    watch_name = next(iter(watches.keys()), "None")
+    severity = weather_summary.get("severity", "Unknown")
+    mesoscale = weather_summary.get("mesoscale", {})
+    mesoscale_prob = mesoscale.get("probability", 0)
+    mesoscale_active = mesoscale.get("active", False)
 
-    watch_name = data.get("most_severe_watch")
-    severity = "Unknown"
-    if not watch_name and watches:
-        watch_name = next(iter(watches), "None")
-        severity = watches.get(watch_name, {}).get("severity", "Unknown")
-    elif watch_name:
-        severity = watches.get(watch_name, {}).get("severity", "Unknown")
+    rain = weather_summary.get("rain", {})
+    max_rain_prob = rain.get("max_probability", 0)
+    max_rain_time = rain.get("max_time", "N/A")
+    rain_in_3days = rain.get("in_next_3_days", False)
 
-    mesoscale_prob = mesoscales.get("probability", "0")
+    has_watch = bool(watches)
 
-    rainalerts = forecast_data.get("rainalerts", {})
-
-    max_rain_prob = 0
-    for alert in rainalerts.values():
-        prob = alert.get("probability", 0)
-        if prob and prob > max_rain_prob:
-            max_rain_prob = prob
-
-    # For the grid, rain_in_3days is True if any rain prob > 20% (or your threshold)
-    rain_in_3days = max_rain_prob > 20
-
-    # has_watch = True if any watch/warning active
-    has_watch = bool(watch_name)
-
-    # mesoscale_active = True if mesoscale probability > 0
-    try:
-        mesoscale_active = int(mesoscale_prob) > 0
-    except Exception:
-        mesoscale_active = False
-
-    # SPC day 1 risk, use the risk dict from get_weather_summary
-    spc_day1_risk = risk.get("day1", 0)
+    risk = weather_summary.get("spc_risk", {})
+    spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
+    spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
 
     return {
         "watch_name": watch_name,
         "severity": severity,
+        "watches": watches,
         "mesoscale_probability": mesoscale_prob,
         "max_rain_probability": max_rain_prob,
+        "max_rain_time": max_rain_time,
         "rain_in_3days": rain_in_3days,
         "has_watch": has_watch,
         "mesoscale_active": mesoscale_active,
-        "spc_day1_risk": spc_day1_risk
+        "spc_day1_risk": spc_day1_risk,
+        "spc_day2_risk": spc_day2_risk
     }
+
 
 
 
