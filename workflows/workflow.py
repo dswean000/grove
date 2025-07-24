@@ -47,6 +47,35 @@ SEVERITY_EMOJI = {
     None: "❓"
 }
 
+def spc_risk_emoji(risk_level):
+    # risk_level expected as int or string number 0-4
+    mapping = {
+        0: "🟢",  # no/light risk (green)
+        1: "🟢",
+        2: "🟡",
+        3: "🟠",
+        4: "🔴"
+    }
+    try:
+        rl = int(risk_level)
+    except Exception:
+        rl = 0
+    return mapping.get(rl, "⚪")  # fallback white circle
+
+def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
+    # Compose the 2x2 emoji grid lines (with padding spaces)
+    line1 = f"{spc_risk_emoji(spc_risk)} {'🌧️' if rain_in_3days else '  '}"
+    line2 = f"{'⚠️' if has_watch else '  '} {'🛑' if mesoscale_active else '  '}"
+    
+    return {
+        "family": "modularSmall",
+        "class": "CLKComplicationTemplateModularSmallStackText",
+        "line1": line1,
+        "line2": line2
+    }
+
+
+
 def get_weather_summary(lat, lon):
     watches = get_watches(lat, lon)
     top_watch = get_most_severe_watch(watches)
@@ -105,41 +134,66 @@ def parse_rainalert_start_time(start_time_str):
 
 
 
-def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
-    # If active mesoscale discussion, override with ⚠️
-    if int(mesoscale_prob) > 0:
-        return {
-            "family": "graphicCircular",
-            "class": "CLKComplicationTemplateGraphicCircularStackText",
-            "line1": "⚠️",
-            "line2": "Mesoscale"
-        }
 
-    # Default label if no date
-    line2 = "Dry"
-    if next_rain_date:
-        try:
-            # Parse date format like "Friday 07/25 at 12AM"
-            dt = datetime.strptime(next_rain_date, "%A %m/%d at %I%p")
-            line2 = format_hour(dt)
-        except Exception as e:
-            print(f"Failed to parse next_rain_date: {next_rain_date} ({e})")
+def build_2x2_emoji_grid(spc_risk, rain_in_3days, has_watch, mesoscale_active):
+    # Map SPC risk to colored circle emoji
+    spc_emoji_map = {
+        "None": "🟢",
+        "Low": "🟩",
+        "Moderate": "🟨",
+        "Enhanced": "🟧",
+        "High": "🔴"
+    }
+    spc_emoji = spc_emoji_map.get(spc_risk, "⚪")  # default white circle if unknown
+
+    # Raindrop emoji if rain in next 3 days, else empty
+    rain_emoji = "🌧️" if rain_in_3days else ""
+
+    # Watch triangle emoji if watch/warning active
+    watch_emoji = "⚠️" if has_watch else ""
+
+    # Red stop sign if mesoscale active
+    mesoscale_emoji = "🛑" if mesoscale_active else ""
+
+    # Build two lines with up to 2 emojis each, no spaces
+    line1 = spc_emoji + rain_emoji
+    line2 = watch_emoji + mesoscale_emoji
 
     return {
-        "family": "graphicCircular",
-        "class": "CLKComplicationTemplateGraphicCircularStackText",
-        "line1": "🌧️",
+        "family": "modularSmall",
+        "class": "CLKComplicationTemplateModularSmallStackText",
+        "line1": line1,
         "line2": line2
     }
 
 
+def build_complication_json(data):
+    # Unpack and normalize spc_day1_risk to string if it's a dict
+    spc_day1_risk = data.get("spc_day1_risk", "None")
+    if isinstance(spc_day1_risk, dict):
+        # Example: spc_day1_risk = {"risk": "Moderate", ...}
+        spc_day1_risk = spc_day1_risk.get("risk", "None")
+    
+    # Rest of unpacking...
+    watch_name = data.get("watch_name", "None")
+    severity = data.get("severity", "Unknown")
+    mesoscale_prob = data.get("mesoscale_probability", "0")
+    max_rain_prob = data.get("max_rain_probability", 0)
+    rain_in_3days = data.get("rain_in_3days", False)
+    has_watch = data.get("has_watch", False)
+    mesoscale_active = data.get("mesoscale_active", False)
 
-def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob, next_rain_date=None, next_rain_prob=0):
     short_name = get_short_watch_name(watch_name)
     emoji = get_emoji_by_severity(severity)
 
-    rain_complication = build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob)
+    emoji_grid_complication = build_2x2_emoji_grid(spc_day1_risk, rain_in_3days, has_watch, mesoscale_active)
 
+    body_text = (
+        f"{emoji} Watch: {watch_name}\n"
+        f"Mesoscale Probability: {mesoscale_prob}%\n"
+        f"Max Rain Probability (3 days): {max_rain_prob}%\n"
+        f"SPC Day 1 Risk Level: {spc_day1_risk}"
+    )
 
     return {
         "name": "Grove Weather",
@@ -147,42 +201,22 @@ def build_complication_json(watch_name, severity, mesoscale_prob, max_rain_prob,
         "views": [
             {
                 "type": "text",
-                "body": f"{emoji} Watch: {watch_name}\nMesoscale: {mesoscale_prob}%\nRain: {max_rain_prob}%"
+                "body": body_text
             }
         ],
         "families": [
-            {
-                "family": "modularSmall",
-                "class": "CLKComplicationTemplateModularSmallStackText",
-                "line1": short_name,
-                "line2": f"{mesoscale_prob}%"
-            },
-            {
-                "family": "modularLarge",
-                "class": "CLKComplicationTemplateModularLargeStandardBody",
-                "header": "Grove Wx",
-                "body1": watch_name,
-                "body2": f"Mesoscale: {mesoscale_prob}%, Rain: {max_rain_prob}%"
-            },
-            {
-                "family": "graphicCircular",
-                "class": "CLKComplicationTemplateGraphicCircularStackText",
-                "line1": emoji,
-                "line2": short_name
-            },
-            rain_complication,
-            {
-                "family": "utilitarianSmall",
-                "class": "CLKComplicationTemplateUtilitarianSmallFlat",
-                "text": f"{short_name} {mesoscale_prob}%"
-            }
+            emoji_grid_complication
         ]
     }
+
+
+
 
 def simplify_for_complication(data):
     watches = data.get("watches", {})
     mesoscales = data.get("mesoscales", {})
     forecast_data = data.get("forecast_data", {})
+    risk = data.get("risk", {})
 
     watch_name = data.get("most_severe_watch")
     severity = "Unknown"
@@ -197,26 +231,37 @@ def simplify_for_complication(data):
     rainalerts = forecast_data.get("rainalerts", {})
 
     max_rain_prob = 0
-    next_rain_date = None
-    next_rain_prob = 0
-
-    for date_str, alert in rainalerts.items():
+    for alert in rainalerts.values():
         prob = alert.get("probability", 0)
         if prob and prob > max_rain_prob:
             max_rain_prob = prob
-            next_rain_date = alert.get("start_time")  # e.g. "Thursday 07/24 at 01PM"
-            next_rain_prob = prob
-    print("DEBUG next_rain_date:", next_rain_date)
-    print("DEBUG next_rain_prob:", next_rain_prob)
+
+    # For the grid, rain_in_3days is True if any rain prob > 20% (or your threshold)
+    rain_in_3days = max_rain_prob > 20
+
+    # has_watch = True if any watch/warning active
+    has_watch = bool(watch_name)
+
+    # mesoscale_active = True if mesoscale probability > 0
+    try:
+        mesoscale_active = int(mesoscale_prob) > 0
+    except Exception:
+        mesoscale_active = False
+
+    # SPC day 1 risk, use the risk dict from get_weather_summary
+    spc_day1_risk = risk.get("day1", 0)
 
     return {
         "watch_name": watch_name,
         "severity": severity,
         "mesoscale_probability": mesoscale_prob,
         "max_rain_probability": max_rain_prob,
-        "next_rain_date": next_rain_date,
-        "next_rain_probability": next_rain_prob,
+        "rain_in_3days": rain_in_3days,
+        "has_watch": has_watch,
+        "mesoscale_active": mesoscale_active,
+        "spc_day1_risk": spc_day1_risk
     }
+
 
 
 def main():
@@ -236,14 +281,7 @@ def main():
     print("\nSimplified data:")
     print(json.dumps(simple, indent=2))
 
-    complication_json = build_complication_json(
-        simple["watch_name"],
-        simple["severity"],
-        simple["mesoscale_probability"],
-        simple["max_rain_probability"],
-        simple.get("next_rain_date"),
-        simple.get("next_rain_probability"),
-    )
+    complication_json = build_complication_json(simple)
     print("\nComplication JSON:")
     print(json.dumps(complication_json, indent=2))
 
