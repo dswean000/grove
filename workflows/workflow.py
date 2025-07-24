@@ -82,38 +82,37 @@ def get_short_watch_name(full_name):
 def get_emoji_by_severity(severity):
     return SEVERITY_EMOJI.get(severity, "❓")
 
-def build_rain_graphic_circular(next_rain_datetime_str, rain_prob, mesoscale_prob):
-    # Show alert if mesoscale discussion is active
-    if mesoscale_prob and int(mesoscale_prob) > 0:
+
+def build_rain_graphic_circular(next_rain_date, next_rain_prob, mesoscale_prob):
+    # If active mesoscale discussion, override with ⚠️
+    if int(mesoscale_prob) > 0:
         return {
             "family": "graphicCircular",
             "class": "CLKComplicationTemplateGraphicCircularStackText",
             "line1": "⚠️",
-            "line2": "MESOSCALE"
+            "line2": "Mesoscale"
         }
 
-    # Fallback to rain forecast
-    if not next_rain_datetime_str:
-        return {
-            "family": "graphicCircular",
-            "class": "CLKComplicationTemplateGraphicCircularStackText",
-            "line1": "🌞",
-            "line2": "DRY"
-        }
+    # Default label if no date
+    line2 = "Dry"
+    if next_rain_date:
+        try:
+            # Try parsing ISO with time first
+            if "T" in next_rain_date:
+                dt = datetime.strptime(next_rain_date, "%Y-%m-%dT%H:%M:%S")
+            else:
+                dt = datetime.strptime(next_rain_date, "%Y-%m-%d")
 
-    try:
-        dt = datetime.strptime(next_rain_datetime_str, "%Y-%m-%dT%H:%M:%S")
-        day_str = dt.strftime("%a").upper()
-        hour_str = dt.strftime("%-I%p").upper()  # Use %-I on Unix, %#I on Windows
-        time_str = f"{day_str} {hour_str}"
-    except Exception:
-        time_str = "N/A"
+            # Windows needs %#I (not %-I like on Unix)
+            line2 = dt.strftime("%a %#I%p")  # e.g. "Thu 4PM"
+        except Exception as e:
+            print(f"Failed to parse next_rain_date: {next_rain_date} ({e})")
 
     return {
         "family": "graphicCircular",
         "class": "CLKComplicationTemplateGraphicCircularStackText",
         "line1": "🌧️",
-        "line2": f"{time_str}"
+        "line2": line2
     }
 
 
