@@ -186,7 +186,17 @@ def build_complication_json(data):
     else:
         active_watches = "None"
 
+    # Format timestamp
+    def format_timestamp(dt):
+        if sys.platform.startswith('win'):
+            return dt.strftime("%a %m/%d %#I:%M%p UTC")
+        else:
+            return dt.strftime("%a %m/%d %-I:%M%p UTC")
+
+    formatted_time = format_timestamp(datetime.now(timezone.utc))
+
     body_text = (
+        f"{formatted_time}\n"
         f"{emoji} Watches: {active_watches}\n"
         f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%\n"
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
@@ -209,6 +219,7 @@ def build_complication_json(data):
             emoji_grid
         ]
     }
+
 
 def simplify_for_complication(data):
     watches = data.get("watches", {})
