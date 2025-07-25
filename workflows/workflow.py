@@ -52,17 +52,27 @@ def rain_emoji_for_alert(alert_date_str):
 
 def spc_risk_emoji(risk_level):
     mapping = {
-        0: "🟢",  # no/light risk (green)
-        1: "🟢",
-        2: "🟡",
-        3: "🟠",
-        4: "🔴"
+        0: "⚪",  # No risk
+        1: "🟢",  # General storms
+        2: "🟢",  # Non-severe t-storms
+        3: "🟢",  # Marginal
+        4: "🟡",  # Slight
+        5: "🟠",  # Enhanced
+        6: "🔴",  # Moderate
+        7: "🟥",  # High
     }
+
+    # ✅ Handle dicts: pull nested "risk_level"
+    if isinstance(risk_level, dict):
+        risk_level = risk_level.get("risk_level", 0)
+
     try:
         rl = int(risk_level)
     except Exception:
         rl = 0
-    return mapping.get(rl, "⚪")  # fallback white circle
+
+    return mapping.get(rl, "⚪")
+
 
 def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active):
     spc_emoji = spc_risk_emoji(spc_risk)
