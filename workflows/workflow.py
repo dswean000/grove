@@ -3,23 +3,22 @@
 import os
 import json
 from datetime import datetime, timezone, timedelta
-from main import get_watches, get_mesoscales, get_max_risk, get_forecast
-from dotenv import load_dotenv
 from zoneinfo import ZoneInfo
+from dotenv import load_dotenv
 import sys
+
+from main import get_watches, get_mesoscales, get_max_risk, get_forecast
 
 load_dotenv("locations.env")
 
-lat = float(os.getenv("LATITUDE"))
-lon = float(os.getenv("LONGITUDE"))
-
+# Constants and mappings
 SEVERITY_RANK = {
     "Extreme": 4,
     "Severe": 3,
     "Moderate": 2,
     "Minor": 1,
     "Unknown": 0,
-    None: 0  # In case severity is missing
+    None: 0
 }
 
 WATCH_NAME_MAP = {
@@ -45,11 +44,11 @@ def rain_emoji_for_alert(alert_date_str):
     central_now = datetime.now(ZoneInfo("America/Chicago")).date()
 
     if alert_date == central_now:
-        return "🔵"
+        return "🔵"  # Blue circle for today
     elif alert_date == central_now + timedelta(days=1):
-        return "⚫"
+        return "⚫"  # Dark gray circle for tomorrow
     else:
-        return "⚪"
+        return "⚪"  # White circle for later
 
 def spc_risk_emoji(risk_level):
     mapping = {
@@ -105,18 +104,71 @@ def get_weather_summary(lat, lon):
 def get_most_severe_watch(watches):
     most_severe_name = None
     highest_rank = -1
-
     for event, details in watches.items():
         severity = details.get("severity", "Unknown")
         rank = SEVERITY_RANK.get(severity, 0)
         if rank > highest_rank:
             highest_rank = rank
             most_severe_name = event
-
     return most_severe_name
 
 def get_emoji_by_severity(severity):
     return SEVERITY_EMOJI.get(severity, "❓")
+
+def simplify_for_complication(data):
+    watches = data.get("watches", {})
+    mesoscales = data.get("mesoscales", {})
+    forecast_data = data.get("forecast_data", {})
+    risk = data.get("risk", {})
+
+    watch_name = data.get("most_severe_watch")
+    severity = "Unknown"
+    if not watch_name and watches:
+        watch_name = next(iter(watches), "None")
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
+    elif watch_name:
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
+
+    mesoscale_prob = mesoscales.get("probability", "0")
+
+    rainalerts = forecast_data.get("rainalerts", {})
+
+    max_rain_prob = 0
+    max_rain_time = "N/A"
+    rain_emoji = "⚪"
+    if rainalerts:
+        first_date_str = next(iter(rainalerts.keys()))
+        first_alert = rainalerts[first_date_str]
+        max_rain_prob = first_alert.get("probability", 0)
+        max_rain_time = first_alert.get("start_time", "N/A")
+        rain_emoji = rain_emoji_for_alert(first_date_str)
+
+    rain_in_3days = max_rain_prob > 30
+
+    has_watch = bool(watch_name)
+
+    try:
+        mesoscale_active = int(mesoscale_prob) > 0
+    except Exception:
+        mesoscale_active = False
+
+    spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
+    spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
+
+    return {
+        "watch_name": watch_name,
+        "severity": severity,
+        "mesoscale_active": mesoscale_active,
+        "mesoscale_probability": mesoscale_prob,
+        "max_rain_probability": max_rain_prob,
+        "max_rain_time": max_rain_time,
+        "rain_in_3days": rain_in_3days,
+        "rain_emoji": rain_emoji,
+        "has_watch": has_watch,
+        "spc_day1_risk": spc_day1_risk,
+        "spc_day2_risk": spc_day2_risk,
+        "watches": watches
+    }
 
 def build_complication_json(data):
     watches = data.get("watches", {})
@@ -176,61 +228,6 @@ def build_complication_json(data):
         ]
     }
 
-def simplify_for_complication(data):
-    watches = data.get("watches", {})
-    mesoscales = data.get("mesoscales", {})
-    forecast_data = data.get("forecast_data", {})
-    risk = data.get("risk", {})
-
-    watch_name = data.get("most_severe_watch")
-    severity = "Unknown"
-    if not watch_name and watches:
-        watch_name = next(iter(watches), "None")
-        severity = watches.get(watch_name, {}).get("severity", "Unknown")
-    elif watch_name:
-        severity = watches.get(watch_name, {}).get("severity", "Unknown")
-
-    mesoscale_prob = mesoscales.get("probability", "0")
-
-    rainalerts = forecast_data.get("rainalerts", {})
-
-    max_rain_prob = 0
-    max_rain_time = "N/A"
-    rain_emoji = "⚪"
-    if rainalerts:
-        first_date_str = next(iter(rainalerts.keys()))
-        first_alert = rainalerts[first_date_str]
-        max_rain_prob = first_alert.get("probability", 0)
-        max_rain_time = first_alert.get("start_time", "N/A")
-        rain_emoji = rain_emoji_for_alert(first_date_str)
-
-    rain_in_3days = max_rain_prob > 30
-
-    has_watch = bool(watch_name)
-
-    try:
-        mesoscale_active = int(mesoscale_prob) > 0
-    except Exception:
-        mesoscale_active = False
-
-    spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
-    spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
-
-    return {
-        "watch_name": watch_name,
-        "severity": severity,
-        "mesoscale_active": mesoscale_active,
-        "mesoscale_probability": mesoscale_prob,
-        "max_rain_probability": max_rain_prob,
-        "max_rain_time": max_rain_time,
-        "rain_in_3days": rain_in_3days,
-        "rain_emoji": rain_emoji,
-        "has_watch": has_watch,
-        "spc_day1_risk": spc_day1_risk,
-        "spc_day2_risk": spc_day2_risk,
-        "watches": watches
-    }
-
 def main():
     latitude = os.getenv("LATITUDE")
     longitude = os.getenv("LONGITUDE")
@@ -258,7 +255,6 @@ def main():
     with open(output_path, "w") as f:
         json.dump(complication_json, f, indent=2)
         print("✅ output.json updated at", datetime.now())
-
 
 if __name__ == "__main__":
     main()
