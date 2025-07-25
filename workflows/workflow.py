@@ -42,14 +42,14 @@ SEVERITY_EMOJI = {
 
 def rain_emoji_for_alert(alert_date_str):
     alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d").date()
-    today = datetime.now().date()
+    central_now = datetime.now(ZoneInfo("America/Chicago")).date()
 
-    if alert_date == today:
-        return "🔵"  # blue circle for today
-    elif alert_date == today + timedelta(days=1):
-        return "⚫"  # dark grey/black circle for tomorrow
+    if alert_date == central_now:
+        return "🔵"
+    elif alert_date == central_now + timedelta(days=1):
+        return "⚫"
     else:
-        return "⚪"  # white circle for later
+        return "⚪"
 
 def spc_risk_emoji(risk_level):
     mapping = {
