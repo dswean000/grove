@@ -53,8 +53,8 @@ def rain_emoji_for_alert(alert_date_str):
 def spc_risk_emoji(risk_level):
     mapping = {
         0: "⚪",  # No risk
-        1: "🟢",  # General storms
-        2: "🟢",  # Non-severe t-storms
+        1: "⚪",  # General storms
+        2: "🟩",  # Non-severe t-storms
         3: "🟢",  # Marginal
         4: "🟡",  # Slight
         5: "🟠",  # Enhanced
