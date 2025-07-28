@@ -2,7 +2,8 @@ name: Weather Cron Job
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # runs every 15 minutes
+    - cron: '*/30 * * * *'  # runs every 30 minutes
+                            # changed 7/28/2025
   workflow_dispatch:        # allows manual runs too
 
 jobs:
