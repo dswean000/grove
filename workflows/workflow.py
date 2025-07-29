@@ -46,7 +46,9 @@ def rain_emoji_for_alert(alert_date_str):
     if alert_date == central_now:
         return "🔵"  # Blue circle for today
     elif alert_date == central_now + timedelta(days=1):
-        return "⚫"  # Dark gray circle for tomorrow
+        return "🟦"  # Dark gray circle for tomorrow
+    elif alert_date == central_now + timedelta(days=2):
+        return "🔹"  # Dark gray circle for tomorrow
     else:
         return "⚪"  # White circle for later
 
