@@ -76,10 +76,16 @@ def spc_risk_emoji(risk_level):
     return mapping.get(rl, "⚪")
 
 
-def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active):
+def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
     watch_emoji = "⚠️" if has_watch else "⚪"
-    mesoscale_emoji = "🛑" if mesoscale_active else "⚪"
+    if mesoscale_active:
+        mesoscale_emoji = "🛑"
+    elif has_midnighthigh:
+        mesoscale_emoji = "⚫"
+    else:
+        mesoscale_emoji = "⚪"
+
 
     return {
         "family": "graphicCircular",
@@ -93,6 +99,7 @@ def get_weather_summary(lat, lon):
     top_watch = get_most_severe_watch(watches)
     mesoscales = get_mesoscales(lat, lon)
     forecast_data = get_forecast(lat, lon)
+
 
     risk = {
         "day1": get_max_risk(1, lat, lon),
@@ -145,6 +152,11 @@ def simplify_for_complication(data):
 
     rainalerts = forecast_data.get("rainalerts", {})
 
+    midnighthigh = forecast_data.get("midnighthigh", {})
+    has_midnighthigh = bool(midnighthigh)
+
+
+
     max_rain_prob = 0
     max_rain_time = "N/A"
     rain_emoji = "⚪"
@@ -179,8 +191,12 @@ def simplify_for_complication(data):
         "has_watch": has_watch,
         "spc_day1_risk": spc_day1_risk,
         "spc_day2_risk": spc_day2_risk,
-        "watches": watches
+        "watches": watches,
+        "has_midnighthigh": has_midnighthigh,      # ✅ already added
+        "midnighthigh": midnighthigh               # ✅ NEW
     }
+
+
 
 def build_complication_json(data):
     watches = data.get("watches", {})
@@ -191,8 +207,17 @@ def build_complication_json(data):
         data.get("spc_day1_risk"),
         data.get("rain_emoji", "⚪"),
         has_watch,
-        data.get("mesoscale_active")
-    )
+        data.get("mesoscale_active"),
+        data.get("has_midnighthigh")   )
+
+    midnighthigh_text = ""
+    if data.get("midnighthigh"):   # if it’s not empty
+        # Format the dict into readable text
+        mh_items = []
+        for k, v in data["midnighthigh"].items():
+            mh_items.append(f"{k}: {v}")
+        midnighthigh_text = "\nMidnight High: " + ", ".join(mh_items)
+
 
     if watches and isinstance(watches, dict):
         active_watches = ", ".join(
@@ -223,7 +248,8 @@ def build_complication_json(data):
         f"{meso_prob_line}\n"
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
         f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
-        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})"
+        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
+        f"{midnighthigh_text}"  
     )
 
     return {
