@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "Tue 07/29 2:43PM CT\n\u26a1 Watches: Heat Advisory issued July 29 at 3:34AM CDT until July 29 at 7:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Wednesday 07/30 at 04PM (66%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n\nMidnight High: 2025-07-31: {'daily_high': 74, 'hour_of_daily_high': 0, 'afternoon_high': 74}"
+      "body": "Tue 07/29 3:31PM CT\n\u26a1 Watches: Heat Advisory issued July 29 at 3:10PM CDT until July 29 at 7:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Wednesday 07/30 at 04PM (66%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
     }
   ],
   "families": [
@@ -12,7 +12,7 @@
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe9 \ud83d\udfe6",
-      "line2": "\u26a0\ufe0f \u26ab"
+      "line2": "\u26a0\ufe0f \u26aa"
     }
   ]
 }
