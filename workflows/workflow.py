@@ -132,7 +132,7 @@ def get_most_severe_watch(watches):
     return most_severe_name
 
 def get_emoji_by_severity(severity):
-    return SEVERITY_EMOJI.get(severity, "❓")
+    return SEVERITY_EMOJI.get(severity, "No")
 
 def simplify_for_complication(data):
     watches = data.get("watches", {})
@@ -249,7 +249,7 @@ def build_complication_json(data):
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
         f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
         f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
-        f"{midnighthigh_text}"  
+        f"Midnight High: {midnighthigh_text}"  
     )
 
     return {
