@@ -243,7 +243,7 @@ def build_complication_json(data):
 
     body_text = (
         f"{formatted_time}\n"
-        f"{emoji} Watches: {active_watches}\n"
+        f"Watches: {active_watches}\n"
         f"Mesoscale Active: {meso_active_str}\n"
         f"{meso_prob_line}\n"
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
