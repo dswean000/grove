@@ -36,7 +36,7 @@ SEVERITY_EMOJI = {
     "Moderate": "⚡",
     "Minor": "🟡",
     "Unknown": "❓",
-    None: "❓"
+    None: ""
 }
 
 def rain_emoji_for_alert(alert_date_str):
