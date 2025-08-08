@@ -79,6 +79,7 @@ def spc_risk_emoji(risk_level):
 def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
     watch_emoji = "⚠️" if has_watch else "⚪"
+    
     if mesoscale_active:
         mesoscale_emoji = "🛑"
     elif has_midnighthigh:
@@ -86,6 +87,14 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
     else:
         mesoscale_emoji = "⚪"
 
+    # ✅ If all four are "no risk" / white, return "All Good"
+    if spc_emoji == "⚪" and rain_emoji == "⚪" and watch_emoji == "⚪" and mesoscale_emoji == "⚪":
+        return {
+            "family": "graphicCircular",
+            "class": "CLKComplicationTemplateGraphicCircularStackText",
+            "line1": "All",
+            "line2": "Good"
+        }
 
     return {
         "family": "graphicCircular",
@@ -93,6 +102,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
+
 
 def get_weather_summary(lat, lon):
     watches = get_watches(lat, lon)
