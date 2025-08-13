@@ -87,13 +87,16 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
     else:
         mesoscale_emoji = "⚪"
 
-    # ✅ If all four are "no risk" / white, return "All Good"
+    # ✅ If all four are "no risk" / white, show sysdate in Central Time
     if spc_emoji == "⚪" and rain_emoji == "⚪" and watch_emoji == "⚪" and mesoscale_emoji == "⚪":
+        now_ct = datetime.now(ZoneInfo("America/Chicago"))
+        date_str = now_ct.strftime("%m/%d/%Y")
+        time_str = now_ct.strftime("%I:%M %p").lstrip("0")  # remove leading 0 in hour
         return {
             "family": "graphicCircular",
             "class": "CLKComplicationTemplateGraphicCircularStackText",
-            "line1": "All",
-            "line2": "Good"
+            "line1": date_str,
+            "line2": time_str
         }
 
     return {
@@ -102,6 +105,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
+
 
 
 def get_weather_summary(lat, lon):
