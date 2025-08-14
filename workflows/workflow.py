@@ -76,6 +76,9 @@ def spc_risk_emoji(risk_level):
     return mapping.get(rl, "⚪")
 
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
     watch_emoji = "⚠️" if has_watch else "⚪"
@@ -90,12 +93,10 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
     # ✅ If all four are "no risk" / white, show sysdate in Central Time
     if spc_emoji == "⚪" and rain_emoji == "⚪" and watch_emoji == "⚪" and mesoscale_emoji == "⚪":
         now_ct = datetime.now(ZoneInfo("America/Chicago"))
-        date_str = now_ct.strftime("%m/%d/%Y")
-        time_str = now_ct.strftime("%I:%M %p").lstrip("0")  # remove leading 0 in hour
+        time_str = now_ct.strftime("%H:%M")  # 24-hour format
         return {
             "family": "graphicCircular",
             "class": "CLKComplicationTemplateGraphicCircularStackText",
-            "line1": date_str,
             "line2": time_str
         }
 
@@ -105,6 +106,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
+
 
 
 
