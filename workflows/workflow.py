@@ -97,7 +97,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
         return {
             "family": "graphicCircular",
             "class": "CLKComplicationTemplateGraphicCircularStackText",
-            "line2": time_str
+            "line1": time_str
         }
 
     return {
