@@ -30,13 +30,13 @@ WATCH_NAME_MAP = {
     "Winter Storm Warning": "WSW"
 }
 
-SEVERITY_EMOJI = {
-    "Extreme": "🔥",
-    "Severe": "⚠️",
-    "Moderate": "⚡",
-    "Minor": "🟡",
-    "Unknown": "❓",
-    None: ""
+severity_emoji = {
+    "Extreme": "🔴",
+    "Severe": "🟠",
+    "Moderate": "🟡",
+    "Minor": "🟢",
+    "Unknown": "⚪",
+    None: "⚪"
 }
 
 def rain_emoji_for_alert(alert_date_str):
@@ -79,9 +79,9 @@ def spc_risk_emoji(risk_level):
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
+def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    watch_emoji = "⚠️" if has_watch else "⚪"
+    watch_emoji = severity_emoji.get(severity, "⚪")   # ✅ use severity mapping
     
     if mesoscale_active:
         mesoscale_emoji = "🛑"
