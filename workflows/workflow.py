@@ -82,7 +82,8 @@ from zoneinfo import ZoneInfo
 def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
     watch_emoji = SEVERITY_EMOJI.get(severity, "⚪")   # ✅ fixed reference
-    
+    print("WATCH EMOJI")
+    print(watch_emoji)
     if mesoscale_active:
         mesoscale_emoji = "🛑"
     elif has_midnighthigh:
@@ -106,9 +107,6 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_m
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
-
-
-
 
 
 def get_weather_summary(lat, lon):
@@ -217,25 +215,24 @@ def simplify_for_complication(data):
 
 def build_complication_json(data):
     watches = data.get("watches", {})
-    has_watch = bool(watches)
+    watch_name = data.get("watch_name", None)
+    severity = data.get("severity", "Unknown")
 
-    emoji = get_emoji_by_severity(data.get("severity", "Unknown"))
     emoji_grid = build_2x2_emoji_grid(
         data.get("spc_day1_risk"),
         data.get("rain_emoji", "⚪"),
-        has_watch,
-        data.get("mesoscale_active"),
-        data.get("has_midnighthigh")   )
+        severity,                          # ✅ Pass actual severity here
+        data.get("mesoscale_active", False),
+        data.get("has_midnighthigh", False)
+    )
 
+    # Format midnighthigh if present
     midnighthigh_text = ""
-    if data.get("midnighthigh"):   # if it’s not empty
-        # Format the dict into readable text
-        mh_items = []
-        for k, v in data["midnighthigh"].items():
-            mh_items.append(f"{k}: {v}")
+    if data.get("midnighthigh"):
+        mh_items = [f"{k}: {v}" for k, v in data["midnighthigh"].items()]
         midnighthigh_text = "\nMidnight High: " + ", ".join(mh_items)
 
-
+    # Active watches text
     if watches and isinstance(watches, dict):
         active_watches = ", ".join(
             watch.get("headline", key) if isinstance(watch, dict) else key
@@ -244,7 +241,7 @@ def build_complication_json(data):
     else:
         active_watches = "None"
 
-    # Format timestamp helper
+    # Timestamp formatting
     def format_timestamp(dt):
         if sys.platform.startswith('win'):
             return dt.strftime("%a %m/%d %#I:%M%p CT")
@@ -254,7 +251,7 @@ def build_complication_json(data):
     central_time = datetime.now(ZoneInfo("America/Chicago"))
     formatted_time = format_timestamp(central_time)
 
-    meso_active = data.get('mesoscale_active')
+    meso_active = data.get('mesoscale_active', False)
     meso_active_str = "Yes" if meso_active else "No"
     meso_prob_line = f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%" if meso_active else ""
 
@@ -264,9 +261,11 @@ def build_complication_json(data):
         f"Mesoscale Active: {meso_active_str}\n"
         f"{meso_prob_line}\n"
         f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
-        f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
-        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
-        f"Midnight High: {midnighthigh_text}"  
+        f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} "
+        f"(Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
+        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} "
+        f"(Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
+        f"{midnighthigh_text}"
     )
 
     return {
@@ -282,6 +281,7 @@ def build_complication_json(data):
             emoji_grid
         ]
     }
+
 
 def main():
     latitude = os.getenv("LATITUDE")
