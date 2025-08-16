@@ -12,32 +12,43 @@ from main import get_watches, get_mesoscales, get_max_risk, get_forecast
 load_dotenv("locations.env")
 
 # Constants and mappings
+# Rank the CAP "severity" values
 SEVERITY_RANK = {
     "Extreme": 4,
     "Severe": 3,
     "Moderate": 2,
     "Minor": 1,
-    "Unknown": 0,
-    None: 0
+    "Unknown": 0
 }
 
-WATCH_NAME_MAP = {
-    "Severe Thunderstorm Watch": "T-Storm",
-    "Heat Advisory": "Heat",
-    "Flood Watch": "Flood",
-    "Tornado Watch": "Tor",
-    "Winter Weather Advisory": "WWA",
-    "Winter Storm Warning": "WSW"
-}
-
+# Map severity levels into a 2x2 classification
+# You can swap these out for whatever emojis you want
 SEVERITY_EMOJI = {
-    "Extreme": "🔥",
-    "Severe": "⚠️",
-    "Moderate": "⚡",
-    "Minor": "🟡",
-    "Unknown": "❓",
-    None: ""
+    "Extreme": "🟥",   # red square
+    "Severe": "🟧",    # orange square
+    "Moderate": "🟨",  # yellow square
+    "Minor": "🟩",     # green square
+    "Unknown": "⚪"    # fallback
 }
+
+def classify_watch(watches):
+    """
+    Return the most severe watch and its corresponding emoji.
+    """
+    most_severe_event = None
+    most_severe_severity = "Unknown"
+    highest_rank = -1
+    
+    for event, details in watches.items():
+        severity = details.get("severity", "Unknown")
+        rank = SEVERITY_RANK.get(severity, 0)
+        if rank > highest_rank:
+            highest_rank = rank
+            most_severe_event = event
+            most_severe_severity = severity
+    
+    emoji = SEVERITY_EMOJI.get(most_severe_severity, "⚪")
+    return most_severe_event, emoji
 
 def rain_emoji_for_alert(alert_date_str):
     alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d").date()
@@ -79,10 +90,10 @@ def spc_risk_emoji(risk_level):
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
+def build_2x2_emoji_grid(spc_risk, rain_emoji, watches, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    watch_emoji = "⚠️" if has_watch else "⚪"
-    
+    top_watch, watch_emoji = classify_watch(watches or {})
+
     if mesoscale_active:
         mesoscale_emoji = "🛑"
     elif has_midnighthigh:
@@ -106,6 +117,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
+
 
 
 
