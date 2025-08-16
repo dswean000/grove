@@ -1,23 +1,142 @@
 #!/usr/bin/env python3
-import json
-from datetime import datetime
-import pytz
 
-# ----------------------------------------------------------------------
-# Severity → Rank mapping (NWS "severity" values)
+import os
+import json
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
+from dotenv import load_dotenv
+import sys
+
+from main import get_watches, get_mesoscales, get_max_risk, get_forecast
+
+load_dotenv("locations.env")
+
+# Constants and mappings
 SEVERITY_RANK = {
     "Extreme": 4,
     "Severe": 3,
     "Moderate": 2,
     "Minor": 1,
     "Unknown": 0,
+    None: 0
 }
 
-# ----------------------------------------------------------------------
-# Helpers
+WATCH_NAME_MAP = {
+    "Severe Thunderstorm Watch": "T-Storm",
+    "Heat Advisory": "Heat",
+    "Flood Watch": "Flood",
+    "Tornado Watch": "Tor",
+    "Winter Weather Advisory": "WWA",
+    "Winter Storm Warning": "WSW"
+}
+
+SEVERITY_EMOJI = {
+    "Extreme": "🔥",
+    "Severe": "⚠️",
+    "Moderate": "⚡",
+    "Minor": "🟡",
+    "Unknown": "❓",
+    None: ""
+}
+
+def rain_emoji_for_alert(alert_date_str):
+    alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d").date()
+    central_now = datetime.now(ZoneInfo("America/Chicago")).date()
+
+    if alert_date == central_now:
+        return "🔵"  # Blue circle for today
+    elif alert_date == central_now + timedelta(days=1):
+        return "🟦"  # Dark gray circle for tomorrow
+    elif alert_date == central_now + timedelta(days=2):
+        return "🔹"  # Dark gray circle for tomorrow
+    else:
+        return "⚪"  # White circle for later
+
+def spc_risk_emoji(risk_level):
+    mapping = {
+        0: "⚪",  # No risk
+        1: "⚪",  # General storms
+        2: "🟩",  # Non-severe t-storms
+        3: "🟢",  # Marginal
+        4: "🟡",  # Slight
+        5: "🟠",  # Enhanced
+        6: "🔴",  # Moderate
+        7: "🟥",  # High
+    }
+
+    # ✅ Handle dicts: pull nested "risk_level"
+    if isinstance(risk_level, dict):
+        risk_level = risk_level.get("risk_level", 0)
+
+    try:
+        rl = int(risk_level)
+    except Exception:
+        rl = 0
+
+    return mapping.get(rl, "⚪")
+
+
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+def build_2x2_emoji_grid(spc_risk, rain_emoji, has_watch, mesoscale_active, has_midnighthigh):
+    spc_emoji = spc_risk_emoji(spc_risk)
+    watch_emoji = "⚠️" if has_watch else "⚪"
+    
+    if mesoscale_active:
+        mesoscale_emoji = "🛑"
+    elif has_midnighthigh:
+        mesoscale_emoji = "⚫"
+    else:
+        mesoscale_emoji = "⚪"
+
+    # ✅ If all four are "no risk" / white, show sysdate in Central Time
+    if spc_emoji == "⚪" and rain_emoji == "⚪" and watch_emoji == "⚪" and mesoscale_emoji == "⚪":
+        now_ct = datetime.now(ZoneInfo("America/Chicago"))
+        time_str = now_ct.strftime("%H:%M")  # 24-hour format
+        return {
+            "family": "graphicCircular",
+            "class": "CLKComplicationTemplateGraphicCircularStackText",
+            "line1": time_str
+        }
+
+    return {
+        "family": "graphicCircular",
+        "class": "CLKComplicationTemplateGraphicCircularStackText",
+        "line1": f"{spc_emoji} {rain_emoji}",
+        "line2": f"{watch_emoji} {mesoscale_emoji}"
+    }
+
+
+
+
+def get_weather_summary(lat, lon):
+    watches = get_watches(lat, lon)
+    top_watch = get_most_severe_watch(watches)
+    mesoscales = get_mesoscales(lat, lon)
+    forecast_data = get_forecast(lat, lon)
+
+
+    risk = {
+        "day1": get_max_risk(1, lat, lon),
+        "day2": get_max_risk(2, lat, lon),
+        "day3": get_max_risk(3, lat, lon)
+    }
+
+    return {
+        "metadata": {
+            "latitude": lat,
+            "longitude": lon,
+            "updated": datetime.now(timezone.utc).isoformat()
+        },
+        "watches": watches,
+        "most_severe_watch": top_watch,
+        "mesoscales": mesoscales,
+        "forecast_data": forecast_data,
+        "risk": risk
+    }
 
 def get_most_severe_watch(watches):
-    """Return the name of the most severe watch/advisory from NWS data."""
     most_severe_name = None
     highest_rank = -1
     for event, details in watches.items():
@@ -28,113 +147,168 @@ def get_most_severe_watch(watches):
             most_severe_name = event
     return most_severe_name
 
+def get_emoji_by_severity(severity):
+    return SEVERITY_EMOJI.get(severity, "No")
 
-def build_2x2_emoji_grid(spc_day1_risk, rain_emoji, watches, mesoscale_active, has_midnighthigh):
-    """
-    Build a 2x2 grid of emojis based on weather data.
-    You can customize the emojis as you see fit.
-    """
+def simplify_for_complication(data):
+    watches = data.get("watches", {})
+    mesoscales = data.get("mesoscales", {})
+    forecast_data = data.get("forecast_data", {})
+    risk = data.get("risk", {})
 
-    # Top-left: SPC day 1 risk
-    risk_level = spc_day1_risk.get("risk_level")
-    if risk_level is None:
-        top_left = "⬜"
-    elif risk_level == 0:
-        top_left = "🟩"
-    elif risk_level == 1:
-        top_left = "🟨"
-    elif risk_level == 2:
-        top_left = "🟧"
-    else:
-        top_left = "🟥"
+    watch_name = data.get("most_severe_watch")
+    severity = "Unknown"
+    if not watch_name and watches:
+        watch_name = next(iter(watches), "None")
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
+    elif watch_name:
+        severity = watches.get(watch_name, {}).get("severity", "Unknown")
 
-    # Top-right: rain signal
-    top_right = rain_emoji or "⚪"
+    mesoscale_prob = mesoscales.get("probability", "0")
 
-    # Bottom-left: most severe watch
-    most_severe = get_most_severe_watch(watches) if watches else None
-    if most_severe:
-        severity = watches[most_severe]["severity"]
-        if severity == "Extreme":
-            bottom_left = "🟥"
-        elif severity == "Severe":
-            bottom_left = "🟧"
-        elif severity == "Moderate":
-            bottom_left = "🟨"
-        elif severity == "Minor":
-            bottom_left = "🟩"
-        else:
-            bottom_left = "⬜"
-    else:
-        bottom_left = "⬜"
+    rainalerts = forecast_data.get("rainalerts", {})
 
-    # Bottom-right: mesoscale discussion or midnight high
-    if mesoscale_active:
-        bottom_right = "🌀"
-    elif has_midnighthigh:
-        bottom_right = "🌙"
-    else:
-        bottom_right = "⬜"
-
-    return f"{top_left}{top_right}\n{bottom_left}{bottom_right}"
+    midnighthigh = forecast_data.get("midnighthigh", {})
+    has_midnighthigh = bool(midnighthigh)
 
 
-def build_complication_json(simple):
-    """Build Apple Watch complication JSON from simplified weather dict."""
-    emoji_grid = build_2x2_emoji_grid(
-        simple["spc_day1_risk"],
-        simple["rain_emoji"],
-        simple["watches"],
-        simple["mesoscale_active"],
-        simple["has_midnighthigh"],
-    )
 
-    # Time in 24h Central Time
-    now_utc = datetime.now(pytz.utc)
-    now_central = now_utc.astimezone(pytz.timezone("US/Central"))
-    time_str = now_central.strftime("%H:%M")
+    max_rain_prob = 0
+    max_rain_time = "N/A"
+    rain_emoji = "⚪"
+    if rainalerts:
+        first_date_str = next(iter(rainalerts.keys()))
+        first_alert = rainalerts[first_date_str]
+        max_rain_prob = first_alert.get("probability", 0)
+        max_rain_time = first_alert.get("start_time", "N/A")
+        rain_emoji = rain_emoji_for_alert(first_date_str)
+
+    rain_in_3days = max_rain_prob > 30
+
+    has_watch = bool(watch_name)
+
+    try:
+        mesoscale_active = int(mesoscale_prob) > 0
+    except Exception:
+        mesoscale_active = False
+
+    spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
+    spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
 
     return {
-        "complication": emoji_grid,
-        "time": time_str,
+        "watch_name": watch_name,
+        "severity": severity,
+        "mesoscale_active": mesoscale_active,
+        "mesoscale_probability": mesoscale_prob,
+        "max_rain_probability": max_rain_prob,
+        "max_rain_time": max_rain_time,
+        "rain_in_3days": rain_in_3days,
+        "rain_emoji": rain_emoji,
+        "has_watch": has_watch,
+        "spc_day1_risk": spc_day1_risk,
+        "spc_day2_risk": spc_day2_risk,
+        "watches": watches,
+        "has_midnighthigh": has_midnighthigh,      # ✅ already added
+        "midnighthigh": midnighthigh               # ✅ NEW
     }
 
 
-# ----------------------------------------------------------------------
-# Entry Point
+
+def build_complication_json(data):
+    watches = data.get("watches", {})
+    has_watch = bool(watches)
+
+    emoji = get_emoji_by_severity(data.get("severity", "Unknown"))
+    emoji_grid = build_2x2_emoji_grid(
+        data.get("spc_day1_risk"),
+        data.get("rain_emoji", "⚪"),
+        has_watch,
+        data.get("mesoscale_active"),
+        data.get("has_midnighthigh")   )
+
+    midnighthigh_text = ""
+    if data.get("midnighthigh"):   # if it’s not empty
+        # Format the dict into readable text
+        mh_items = []
+        for k, v in data["midnighthigh"].items():
+            mh_items.append(f"{k}: {v}")
+        midnighthigh_text = "\nMidnight High: " + ", ".join(mh_items)
+
+
+    if watches and isinstance(watches, dict):
+        active_watches = ", ".join(
+            watch.get("headline", key) if isinstance(watch, dict) else key
+            for key, watch in watches.items()
+        )
+    else:
+        active_watches = "None"
+
+    # Format timestamp helper
+    def format_timestamp(dt):
+        if sys.platform.startswith('win'):
+            return dt.strftime("%a %m/%d %#I:%M%p CT")
+        else:
+            return dt.strftime("%a %m/%d %-I:%M%p CT")
+
+    central_time = datetime.now(ZoneInfo("America/Chicago"))
+    formatted_time = format_timestamp(central_time)
+
+    meso_active = data.get('mesoscale_active')
+    meso_active_str = "Yes" if meso_active else "No"
+    meso_prob_line = f"Mesoscale Probability: {data.get('mesoscale_probability', 0)}%" if meso_active else ""
+
+    body_text = (
+        f"{formatted_time}\n"
+        f"Watches: {active_watches}\n"
+        f"Mesoscale Active: {meso_active_str}\n"
+        f"{meso_prob_line}\n"
+        f"Rain Chance: {data.get('max_rain_time', 'N/A')} ({data.get('max_rain_probability', 0)}%)\n"
+        f"SPC Day 1 Risk: {data.get('spc_day1_risk', {}).get('description', 'None')} (Level {data.get('spc_day1_risk', {}).get('risk_level', 0)})\n"
+        f"SPC Day 2 Risk: {data.get('spc_day2_risk', {}).get('description', 'None')} (Level {data.get('spc_day2_risk', {}).get('risk_level', 0)})\n"
+        f"Midnight High: {midnighthigh_text}"  
+    )
+
+    return {
+        "name": "Grove Weather",
+        "showOnLockScreen": True,
+        "views": [
+            {
+                "type": "text",
+                "body": body_text
+            }
+        ],
+        "families": [
+            emoji_grid
+        ]
+    }
 
 def main():
-    # Simulated simplified input (normally comes from your pipeline)
-    simple = {
-        "watch_name": "Heat Advisory",
-        "severity": "Moderate",
-        "mesoscale_active": False,
-        "mesoscale_probability": "0",
-        "max_rain_probability": 31,
-        "max_rain_time": "Tuesday 08/19 at 01PM",
-        "rain_in_3days": True,
-        "rain_emoji": "⚪",
-        "has_watch": True,
-        "spc_day1_risk": {"description": None, "risk_level": None},
-        "spc_day2_risk": {"description": "Non-Severe T-Storms", "risk_level": 2},
-        "watches": {
-            "Heat Advisory": {
-                "id": "urn:oid:xyz",
-                "onset": "2025-08-16T13:00:00-05:00",
-                "expires": "2025-08-16T19:00:00-05:00",
-                "severity": "Moderate",
-                "urgency": "Expected",
-                "headline": "Heat Advisory issued ...",
-                "description": "* WHAT...heat index values up to 106 expected.",
-            }
-        },
-        "has_midnighthigh": False,
-        "midnighthigh": {},
-    }
+    latitude = os.getenv("LATITUDE")
+    longitude = os.getenv("LONGITUDE")
+    if not latitude or not longitude:
+        raise Exception("LATITUDE and LONGITUDE environment variables must be set.")
+
+    latitude = float(latitude)
+    longitude = float(longitude)
+
+    summary = get_weather_summary(latitude, longitude)
+    print("Full detailed JSON:")
+    print(json.dumps(summary, indent=2))
+
+    simple = simplify_for_complication(summary)
+    print("\nSimplified data:")
+    print(json.dumps(simple, indent=2))
 
     complication_json = build_complication_json(simple)
+    print("\nComplication JSON:")
     print(json.dumps(complication_json, indent=2))
 
+    output_path = os.path.join(os.path.dirname(__file__), 'output.json')
+    print(f"Writing to: {os.path.abspath(output_path)}")
+
+    with open(output_path, "w") as f:
+        json.dump(complication_json, f, indent=2)
+        print("✅ output.json updated at", datetime.now())
 
 if __name__ == "__main__":
     main()
