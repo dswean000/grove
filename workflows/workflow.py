@@ -92,7 +92,7 @@ from zoneinfo import ZoneInfo
 
 def build_2x2_emoji_grid(spc_risk, rain_emoji, watches, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    top_watch, watch_emoji = classify_watch(watches or {})
+    top_watch, watch_emoji = classify_watch(data.get("watches", {}))
 
     if mesoscale_active:
         mesoscale_emoji = "🛑"
