@@ -30,7 +30,7 @@ WATCH_NAME_MAP = {
     "Winter Storm Warning": "WSW"
 }
 
-severity_emoji = {
+SEVERITY_EMOJI = {
     "Extreme": "🔴",
     "Severe": "🟠",
     "Moderate": "🟡",
