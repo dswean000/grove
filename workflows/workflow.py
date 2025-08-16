@@ -81,7 +81,7 @@ from zoneinfo import ZoneInfo
 
 def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    watch_emoji = severity_emoji.get(severity, "⚪")   # ✅ use severity mapping
+    watch_emoji = SEVERITY_EMOJI.get(severity, "⚪")   # ✅ fixed reference
     
     if mesoscale_active:
         mesoscale_emoji = "🛑"
@@ -106,6 +106,7 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_m
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
+
 
 
 
