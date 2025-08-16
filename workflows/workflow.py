@@ -233,11 +233,13 @@ def build_complication_json(data):
 
     emoji = get_emoji_by_severity(data.get("severity", "Unknown"))
     emoji_grid = build_2x2_emoji_grid(
-    simple["spc_day1_risk"],
-    simple["rain_emoji"],
-    simple["watches"],
-    simple["mesoscale_active"],
-    simple["has_midnighthigh"])
+        simplified["spc_day1_risk"],
+        simplified["rain_emoji"],
+        simplified["watches"],
+        simplified["mesoscale_active"],
+        simplified["has_midnighthigh"]
+    )
+
 
 
     midnighthigh_text = ""
