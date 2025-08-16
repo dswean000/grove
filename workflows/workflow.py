@@ -90,9 +90,14 @@ def spc_risk_emoji(risk_level):
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 def build_2x2_emoji_grid(spc_risk, rain_emoji, watches, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    top_watch, watch_emoji = classify_watch(data.get("watches", {}))
+
+    # ✅ classify_watch works off the watches dict you already simplified
+    top_watch, watch_emoji = classify_watch(watches)
 
     if mesoscale_active:
         mesoscale_emoji = "🛑"
@@ -117,10 +122,6 @@ def build_2x2_emoji_grid(spc_risk, rain_emoji, watches, mesoscale_active, has_mi
         "line1": f"{spc_emoji} {rain_emoji}",
         "line2": f"{watch_emoji} {mesoscale_emoji}"
     }
-
-
-
-
 
 def get_weather_summary(lat, lon):
     watches = get_watches(lat, lon)
@@ -232,11 +233,12 @@ def build_complication_json(data):
 
     emoji = get_emoji_by_severity(data.get("severity", "Unknown"))
     emoji_grid = build_2x2_emoji_grid(
-        data.get("spc_day1_risk"),
-        data.get("rain_emoji", "⚪"),
-        has_watch,
-        data.get("mesoscale_active"),
-        data.get("has_midnighthigh")   )
+    simple["spc_day1_risk"],
+    simple["rain_emoji"],
+    simple["watches"],
+    simple["mesoscale_active"],
+    simple["has_midnighthigh"])
+
 
     midnighthigh_text = ""
     if data.get("midnighthigh"):   # if it’s not empty
