@@ -39,27 +39,6 @@ SEVERITY_EMOJI = {
     None: "⚪"
 }
 
-def safe_get_json(url, retries=1, delay=1):
-    """
-    Fetches JSON from a URL, retries once if there's a JSONDecodeError.
-    """
-    for attempt in range(retries + 1):
-        try:
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.JSONDecodeError:
-            if attempt < retries:
-                print(f"⚠️ JSON decode failed, retrying in {delay}s... (attempt {attempt+1})")
-                time.sleep(delay)
-            else:
-                raise
-        except requests.RequestException as e:
-            # Fail fast for other types of request issues
-            print(f"❌ Request failed: {e}")
-            raise
-
-
 def rain_emoji_for_alert(alert_date_str):
     alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d").date()
     central_now = datetime.now(ZoneInfo("America/Chicago")).date()

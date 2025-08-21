@@ -117,8 +117,7 @@ def get_max_risk(day, latitude, longitude):
     outlook_url = outlook_urls[day]
 
     # Fetch and parse the outlook response
-    from workflow import safe_get_json  # or move safe_get_json into main.py directly
-    outlook_response = safe_get_json(outlook_url, retries=1, delay=2)
+    outlook_response = requests.get(outlook_url).json()
     
     max_dn = float('-inf')
     risk_level_description = None
@@ -153,7 +152,6 @@ def get_max_risk(day, latitude, longitude):
 from collections import defaultdict
 from datetime import datetime
 import requests
-import workflow
 
 def get_forecast(latitude, longitude):
     forecast_data = {
