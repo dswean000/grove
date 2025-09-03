@@ -39,6 +39,28 @@ SEVERITY_EMOJI = {
     None: "⚪"
 }
 
+def format_midnighthigh(date, data):
+    """
+    Takes a date and a dict like:
+    {'daily_high': 66, 'hour_of_daily_high': 0, 'afternoon_high': 65}
+    Returns a clean string like:
+    Midnight High for 2025-09-05: 66°F at 0:00 (Afternoon High: 65°F)
+    """
+    if not data:
+        return f"Midnight High for {date}: No data"
+
+    daily_high = data.get("daily_high", "N/A")
+    hour = data.get("hour_of_daily_high", "N/A")
+    afternoon_high = data.get("afternoon_high", "N/A")
+
+    return (
+        f"Midnight High for {date}: "
+        f"{daily_high}°F at {hour}:00 "
+        f"(Afternoon High: {afternoon_high}°F)"
+    )
+
+
+
 def rain_emoji_for_alert(alert_date_str):
     alert_date = datetime.strptime(alert_date_str, "%Y-%m-%d").date()
     central_now = datetime.now(ZoneInfo("America/Chicago")).date()
@@ -224,11 +246,15 @@ def build_complication_json(data):
         data.get("has_midnighthigh", False)
     )
 
-    # Format midnighthigh if present
     midnighthigh_text = ""
     if data.get("midnighthigh"):
-        mh_items = [f"{k}: {v}" for k, v in data["midnighthigh"].items()]
-        midnighthigh_text = "\nMidnight High: " + ", ".join(mh_items)
+        mh = data["midnighthigh"]
+        # There's usually only one date key, but handle multiple just in case
+        mh_lines = []
+        for date, details in mh.items():
+            mh_lines.append(format_midnighthigh(date, details))
+        midnighthigh_text = "\n" + "\n".join(mh_lines)
+
 
     # Active watches text
     if watches and isinstance(watches, dict):
