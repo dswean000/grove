@@ -4,7 +4,11 @@
   "views": [
     {
       "type": "text",
+<<<<<<< Updated upstream
       "body": "Fri 09/19 6:39PM CT\nWatches: None\nMesoscale Active: Yes\nMesoscale Probability: 60%\nRain Chance: Saturday 09/20 at 03AM (48%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
+=======
+      "body": "Fri 09/19 6:55PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Saturday 09/20 at 03AM (48%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
+>>>>>>> Stashed changes
     }
   ],
   "families": [
@@ -12,7 +16,11 @@
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe9 \ud83d\udfe6",
+<<<<<<< Updated upstream
       "line2": "\u26aa \ud83d\uded1"
+=======
+      "line2": "\u26aa \u26aa"
+>>>>>>> Stashed changes
     }
   ]
 }

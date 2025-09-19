@@ -38,17 +38,23 @@ def get_mesoscales(latitude, longitude):
     feed = feedparser.parse(feed_url)
     pattern = r"Probability of Watch Issuance\.\.\.(\d+)\spercent"
 
+    # --- helper: parse SPC compact coord like 39830183 ---
+    def parse_spc_coord(coord):
+        lat = int(coord[:4]) / 100.0
+        lon = - (int(coord[4:]) / 100.0)
+        if lon > -10:   # heuristic fix: e.g. -1.83 should be -101.83
+            lon -= 100.0
+        return (lon, lat)  # shapely wants (x=lon, y=lat)
+
     for item in feed.entries:
         raw_desc = item.description
-
-        # Extract CDATA block inside <pre> tags
         pre_match = re.search(r"<pre>(.*?)</pre>", raw_desc, re.DOTALL)
         if not pre_match:
             continue
 
         pre_text = pre_match.group(1)
 
-        # Get coordinates block (series of 8-digit LATLON strings)
+        # Extract 8-digit compact coords
         coord_pattern = re.findall(r"\b\d{8}\b", pre_text)
         if not coord_pattern:
             continue
@@ -56,9 +62,7 @@ def get_mesoscales(latitude, longitude):
         formatted_coordinates = []
         for coord in coord_pattern:
             try:
-                lat = float(coord[:2] + "." + coord[2:4])
-                lon = -float(coord[4:6] + "." + coord[6:8])
-                formatted_coordinates.append((lon, lat))  # Geo-style: (lon, lat)
+                formatted_coordinates.append(parse_spc_coord(coord))
             except Exception:
                 continue
 
@@ -71,29 +75,21 @@ def get_mesoscales(latitude, longitude):
         if polygon.contains(point):
             mesoscale_data["description"] = pre_text.strip()
 
-            # Get SUMMARY section
             summary_match = re.search(r"SUMMARY\.\.\.(.*?)DISCUSSION", pre_text, re.DOTALL)
             if summary_match:
                 mesoscale_data["summary"] = summary_match.group(1).strip()
             else:
-                # fallback to start of message
                 mesoscale_data["summary"] = pre_text[:200].strip()
 
             prob_match = re.search(pattern, pre_text)
-            if prob_match:
-                mesoscale_data["probability"] = prob_match.group(1)
-            else:
-                mesoscale_data["probability"] = "Unknown"
-
-            break  # exit after first matching polygon
+            mesoscale_data["probability"] = prob_match.group(1) if prob_match else "Unknown"
+            break
 
     if mesoscale_data["summary"] is None:
         mesoscale_data["summary"] = "None"
         mesoscale_data["probability"] = "0"
 
     return mesoscale_data
-
-
 
 
 def get_max_risk(day, latitude, longitude):

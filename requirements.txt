@@ -6,3 +6,4 @@ Flask-Caching
 python-dotenv
 tzdata
 pytz
+Caching
