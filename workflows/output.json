@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Sat 09/20 8:40AM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Saturday 09/20 at 09AM (35%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
+      "body": "Sat 09/20 9:20AM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Sunday 09/21 at 07AM (47%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \ud83d\udd35",
+      "line1": "\ud83d\udfe9 \ud83d\udfe6",
       "line2": "\u26aa \u26aa"
     }
   ]
