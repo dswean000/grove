@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Mon 10/20 3:34AM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Thursday 10/23 at 07PM (35%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Mon 10/20 4:29AM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Thursday 10/23 at 07PM (35%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "03:34"
+      "line1": "04:29"
     }
   ]
 }
