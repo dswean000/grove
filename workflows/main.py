@@ -142,9 +142,6 @@ def get_max_risk(day, latitude, longitude):
     return risk_data
 
 
-# In[2]:
-
-
 from collections import defaultdict
 from datetime import datetime
 import requests
@@ -185,23 +182,24 @@ def get_forecast(latitude, longitude):
                 "afternoon_high": temp_5pm
             }
 
-    # Calculate rain alerts
+
     for period in periods:
-        start_date = period['startTime'].split('T')[0]
-        probability = period['probabilityOfPrecipitation']['value']
+        # Convert startTime to datetime first
+        start_time = datetime.strptime(period['startTime'], "%Y-%m-%dT%H:%M:%S%z")
+        
+        # Only process future periods
+        if start_time > datetime.now(start_time.tzinfo):  # match timezone
+            start_date = start_time.date().isoformat()  # 'YYYY-MM-DD'
+            probability = period['probabilityOfPrecipitation']['value']
 
-        if probability > 30:
-            # Only add the first alert for each day
-            if start_date not in forecast_data["rainalerts"]:
-                start_time = datetime.strptime(period['startTime'], "%Y-%m-%dT%H:%M:%S%z")
-                start_time_str = start_time.strftime("%A %m/%d at %I%p")
-
-                forecast_data["rainalerts"][start_date] = {
-                    'start_time': start_time_str, 
-                    'probability': probability
-                }
-
-
+            if probability > 30:
+                # Only add the first alert for each day
+                if start_date not in forecast_data["rainalerts"]:
+                    start_time_str = start_time.strftime("%A %m/%d at %I%p")
+                    forecast_data["rainalerts"][start_date] = {
+                        'start_time': start_time_str,
+                        'probability': probability
+                    }
 
     return forecast_data
 
@@ -232,36 +230,3 @@ if debug == 1:
 
     print("Forecast Zone:", forecast_zone)
     print("Forecast Office:", forecast_office)
-
-
-# Step 1- is there any severe risk for the next three days? 
-#day1_risk = get_max_risk(cat1outlook_response)
-#day2_risk = get_max_risk(cat2outlook_response)
-#day3_risk = get_max_risk(cat3outlook_response)
-#print("Day 1 Convective Risk: ",day1_risk)
-#print("Day 2 Convective Risk: ",day2_risk)
-#print("Day 3 Convective Risk: ",day3_risk)
-#print("----------------------------------")
-#https://www.spc.noaa.gov/misc/about.html#Convective%20Outlooks
-
-#step 2- Mesoscales
-summary = "" 
-#current_mesoscales = get_mesoscales(latitude,longitude)
-#print(current_mesoscales)
-
-#if "None" not in summary:
-#    summary = current_mesoscales[0]
-#    probability = current_mesoscales[1]
-#print("Current Mesoscale Discussion Summary:",summary)
-#if len(probability) > 1:
- #   print("Watch Probability: ",probability,"Percent")
-
-#step 3- Watches
-#alerts = get_watches(alerts_response,latitude,longitude)
-#print("Current Watches/Warnings: ",alerts)
-
-#Step 4- Actual Forecasts...
-midnighthigh = ""
-#forecastData = get_forecast(forecast_hourly_response)
-print(midnighthigh)
-
