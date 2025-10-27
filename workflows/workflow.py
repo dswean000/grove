@@ -35,8 +35,8 @@ SEVERITY_EMOJI = {
     "Severe": "🟠",
     "Moderate": "🟡",
     "Minor": "🟢",
-    "Unknown": "⚪",
-    None: "⚪"
+    "Unknown": "⚫",
+    None: "⚫"
 }
 
 def format_midnighthigh(date, data):
@@ -66,18 +66,18 @@ def rain_emoji_for_alert(alert_date_str):
     central_now = datetime.now(ZoneInfo("America/Chicago")).date()
 
     if alert_date == central_now:
-        return "🔵"  # Blue circle for today
+        return "🔵"  
     elif alert_date == central_now + timedelta(days=1):
-        return "🟦"  # Dark gray circle for tomorrow
+        return "🟦"  
     elif alert_date == central_now + timedelta(days=2):
-        return "🔹"  # Dark gray circle for tomorrow
+        return "🔹" 
     else:
-        return "⚪"  # White circle for later
+        return "⚫"  
 
 def spc_risk_emoji(risk_level):
     mapping = {
-        0: "⚪",  # No risk
-        1: "⚪",  # General storms
+        0: "⚫",  # No risk
+        1: "⚫",  # General storms
         2: "🟩",  # Non-severe t-storms
         3: "🟢",  # Marginal
         4: "🟡",  # Slight
@@ -95,7 +95,7 @@ def spc_risk_emoji(risk_level):
     except Exception:
         rl = 0
 
-    return mapping.get(rl, "⚪")
+    return mapping.get(rl, "⚫")
 
 
 from datetime import datetime
@@ -103,16 +103,16 @@ from zoneinfo import ZoneInfo
 
 def build_2x2_emoji_grid(spc_risk, rain_emoji, severity, mesoscale_active, has_midnighthigh):
     spc_emoji = spc_risk_emoji(spc_risk)
-    watch_emoji = SEVERITY_EMOJI.get(severity, "⚪")
+    watch_emoji = SEVERITY_EMOJI.get(severity, "⚫")
     if mesoscale_active:
         mesoscale_emoji = "🛑"
     elif has_midnighthigh:
-        mesoscale_emoji = "⚫"
-    else:
         mesoscale_emoji = "⚪"
+    else:
+        mesoscale_emoji = "⚫"
 
     # ✅ If all four are "no risk" / white, show sysdate in Central Time
-    if spc_emoji == "⚪" and rain_emoji == "⚪" and watch_emoji == "⚪" and mesoscale_emoji == "⚪":
+    if spc_emoji == "⚫" and rain_emoji == "⚫" and watch_emoji == "⚫" and mesoscale_emoji == "⚫":
         now_ct = datetime.now(ZoneInfo("America/Chicago"))
         time_str = now_ct.strftime("%H:%M")  # 24-hour format
         return {
@@ -194,7 +194,7 @@ def simplify_for_complication(data):
 
     max_rain_prob = 0
     max_rain_time = "N/A"
-    rain_emoji = "⚪"
+    rain_emoji = "⚫"
     if rainalerts:
         first_date_str = next(iter(rainalerts.keys()))
         first_alert = rainalerts[first_date_str]
@@ -240,7 +240,7 @@ def build_complication_json(data):
 
     emoji_grid = build_2x2_emoji_grid(
         data.get("spc_day1_risk"),
-        data.get("rain_emoji", "⚪"),
+        data.get("rain_emoji", "⚫"),
         severity,                          # ✅ Pass actual severity here
         data.get("mesoscale_active", False),
         data.get("has_midnighthigh", False)
