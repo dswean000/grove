@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Fri 01/23 10:40PM CT\nWatches: Cold Weather Advisory issued January 23 at 6:10PM CST until January 24 at 12:00PM CST by NWS Kansas City/Pleasant Hill MO, Winter Storm Warning issued January 23 at 1:36PM CST until January 25 at 6:00PM CST by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Friday 01/23 at 11PM (34%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Fri 01/23 11:47PM CT\nWatches: Cold Weather Advisory issued January 23 at 6:10PM CST until January 24 at 12:00PM CST by NWS Kansas City/Pleasant Hill MO, Winter Storm Warning issued January 23 at 1:36PM CST until January 25 at 6:00PM CST by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Saturday 01/24 at 12AM (40%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\u26ab \ud83d\udd35",
+      "line1": "\u26ab \ud83d\udfe6",
       "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
