@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "Fri 02/13 1:26PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Saturday 02/14 at 03AM (39%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Fri 02/13 2:01PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Saturday 02/14 at 02AM (42%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n\nMidnight High for 2026-02-14: 53\u00b0F at 4:00 (Afternoon High: 52\u00b0F)"
     }
   ],
   "families": [
@@ -12,7 +12,7 @@
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe9 \ud83d\udfe6",
-      "line2": "\u26ab \u26ab"
+      "line2": "\u26ab \u26aa"
     }
   ]
 }
