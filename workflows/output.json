@@ -4,15 +4,15 @@
   "views": [
     {
       "type": "text",
-      "body": "Sat 03/07 12:40AM CT\nWatches: Tornado Watch issued March 7 at 12:04AM CST until March 7 at 4:00AM CST by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Saturday 03/07 at 01AM (38%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n\nMidnight High for 2026-03-07: 61\u00b0F at 0:00 (Afternoon High: 51\u00b0F)\nMidnight High for 2026-03-11: 60\u00b0F at 0:00 (Afternoon High: 53\u00b0F)"
+      "body": "Sat 03/07 1:16AM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Tuesday 03/10 at 07AM (32%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n\nMidnight High for 2026-03-07: 61\u00b0F at 0:00 (Afternoon High: 51\u00b0F)\nMidnight High for 2026-03-11: 60\u00b0F at 0:00 (Afternoon High: 53\u00b0F)"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\u26ab \ud83d\udd35",
-      "line2": "\ud83d\udd34 \u26aa"
+      "line1": "\u26ab \u26ab",
+      "line2": "\u26ab \u26aa"
     }
   ]
 }
