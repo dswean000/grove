@@ -214,6 +214,33 @@ def simplify_for_complication(data):
     spc_day1_risk = risk.get("day1", {"description": "None", "risk_level": 0})
     spc_day2_risk = risk.get("day2", {"description": "None", "risk_level": 0})
 
+    # Build 4-day grid
+    central_now = datetime.now(ZoneInfo("America/Chicago")).date()
+    spc_by_day = [
+        risk.get("day1", {"description": "None", "risk_level": 0}),
+        risk.get("day2", {"description": "None", "risk_level": 0}),
+        risk.get("day3", {"description": "None", "risk_level": 0}),
+        None,  # day4: aspirational, not yet fetched
+    ]
+    four_days_grid = []
+    for i in range(4):
+        date = central_now + timedelta(days=i)
+        date_str = date.isoformat()
+        rain_e = "🔵" if date_str in rainalerts else "⚫"
+        if i == 0:
+            watch_e = SEVERITY_EMOJI.get(severity, "⚫")
+            meso_e = "🛑" if mesoscale_active else ("⚪" if has_midnighthigh else "⚫")
+        else:
+            watch_e = "⚫"
+            meso_e = "⚫"
+        four_days_grid.append({
+            "day_abbr": date.strftime("%a"),
+            "spc_emoji": spc_risk_emoji(spc_by_day[i]) if spc_by_day[i] is not None else "⚫",
+            "rain_emoji": rain_e,
+            "watch_emoji": watch_e,
+            "meso_emoji": meso_e,
+        })
+
     return {
         "watch_name": watch_name,
         "severity": severity,
@@ -227,10 +254,31 @@ def simplify_for_complication(data):
         "spc_day1_risk": spc_day1_risk,
         "spc_day2_risk": spc_day2_risk,
         "watches": watches,
-        "has_midnighthigh": has_midnighthigh,      # ✅ already added
-        "midnighthigh": midnighthigh               # ✅ NEW
+        "has_midnighthigh": has_midnighthigh,
+        "midnighthigh": midnighthigh,
+        "four_days_grid": four_days_grid,
     }
 
+
+
+def build_modular_large_json(four_days_grid):
+    header = "  ".join(d["day_abbr"] for d in four_days_grid)
+    body1 = "  ".join(f"{d['spc_emoji']}{d['rain_emoji']}" for d in four_days_grid)
+    body2 = "  ".join(f"{d['watch_emoji']}{d['meso_emoji']}" for d in four_days_grid)
+    return {
+        "name": "Grove 4-Day",
+        "showOnLockScreen": True,
+        "views": [],
+        "families": [
+            {
+                "family": "modularLarge",
+                "class": "CLKComplicationTemplateModularLargeStandardBody",
+                "header": header,
+                "body1": body1,
+                "body2": body2,
+            }
+        ]
+    }
 
 
 def build_complication_json(data):
@@ -334,6 +382,12 @@ def main():
     with open(output_path, "w") as f:
         json.dump(complication_json, f, indent=2)
         print("✅ output.json updated at", datetime.now())
+
+    modular_json = build_modular_large_json(simple["four_days_grid"])
+    modular_path = os.path.join(os.path.dirname(__file__), 'output_modular.json')
+    with open(modular_path, "w") as f:
+        json.dump(modular_json, f, indent=2)
+        print("✅ output_modular.json updated at", datetime.now())
 
 if __name__ == "__main__":
     main()
