@@ -1,7 +1,12 @@
 {
   "name": "Grove 4-Day",
   "showOnLockScreen": true,
-  "views": [],
+  "views": [
+    {
+      "type": "text",
+      "body": "Mon 03/09 10:29AM CT\nMon  Tue  Wed  Thu\n\u26ab\u26ab  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\u26ab\n\u26ab\u26aa  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+    }
+  ],
   "families": [
     {
       "family": "modularLarge",
