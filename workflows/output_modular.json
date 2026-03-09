@@ -1,1 +1,14 @@
-{}
+{
+  "name": "Grove 4-Day",
+  "showOnLockScreen": true,
+  "views": [],
+  "families": [
+    {
+      "family": "modularLarge",
+      "class": "CLKComplicationTemplateModularLargeStandardBody",
+      "header": "Mon  Tue  Wed  Thu",
+      "body1": "\u26ab\u26ab  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\u26ab",
+      "body2": "\u26ab\u26aa  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+    }
+  ]
+}
