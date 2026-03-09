@@ -265,10 +265,21 @@ def build_modular_large_json(four_days_grid):
     header = "  ".join(d["day_abbr"] for d in four_days_grid)
     body1 = "  ".join(f"{d['spc_emoji']}{d['rain_emoji']}" for d in four_days_grid)
     body2 = "  ".join(f"{d['watch_emoji']}{d['meso_emoji']}" for d in four_days_grid)
+    central_time = datetime.now(ZoneInfo("America/Chicago"))
+    if sys.platform.startswith('win'):
+        timestamp = central_time.strftime("%a %m/%d %#I:%M%p CT")
+    else:
+        timestamp = central_time.strftime("%a %m/%d %-I:%M%p CT")
+    body_text = f"{timestamp}\n{header}\n{body1}\n{body2}"
     return {
         "name": "Grove 4-Day",
         "showOnLockScreen": True,
-        "views": [],
+        "views": [
+            {
+                "type": "text",
+                "body": body_text
+            }
+        ],
         "families": [
             {
                 "family": "modularLarge",
