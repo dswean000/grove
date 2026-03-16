@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Sun 03/15 7:03PM CT\nWatches: Wind Advisory issued March 15 at 1:58PM CDT until March 16 at 12:00PM CDT by NWS Kansas City/Pleasant Hill MO, Winter Weather Advisory issued March 15 at 8:53AM CDT until March 16 at 1:00AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Sunday 03/15 at 08PM (34%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Sun 03/15 10:34PM CT\nWatches: Wind Advisory issued March 15 at 9:21PM CDT until March 16 at 7:00AM CDT by NWS Kansas City/Pleasant Hill MO, Winter Weather Advisory issued March 15 at 8:53AM CDT until March 16 at 1:00AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: N/A (0%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\u26ab \ud83d\udd35",
+      "line1": "\u26ab \u26ab",
       "line2": "\ud83d\udfe1 \u26ab"
     }
   ]
