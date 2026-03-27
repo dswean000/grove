@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Fri 03/27 1:12AM CT\nWatches: Red Flag Warning issued March 26 at 1:32PM CDT until March 27 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO, Fire Weather Watch issued March 26 at 1:32PM CDT until March 28 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Friday 03/27 at 02AM (53%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Fri 03/27 2:35AM CT\nWatches: Fire Weather Watch issued March 27 at 2:35AM CDT until March 28 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO, Red Flag Warning issued March 27 at 2:35AM CDT until March 27 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Tuesday 03/31 at 01PM (34%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\u26ab \ud83d\udd35",
+      "line1": "\u26ab \u26ab",
       "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
