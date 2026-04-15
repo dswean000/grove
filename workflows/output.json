@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "Wed 04/15 2:48PM CT\nWatches: None\nMesoscale Active: Yes\nMesoscale Probability: 80%\nRain Chance: Wednesday 04/15 at 03PM (32%)\nSPC Day 1 Risk: Slight Risk (Level 4)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Wed 04/15 3:48PM CT\nWatches: Tornado Watch issued April 15 at 3:40PM CDT until April 15 at 9:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: Yes\nMesoscale Probability: 80%\nRain Chance: Wednesday 04/15 at 04PM (55%)\nSPC Day 1 Risk: Slight Risk (Level 4)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
@@ -12,7 +12,7 @@
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\ud83d\udfe1 \ud83d\udd35",
-      "line2": "\u26ab \ud83d\uded1"
+      "line2": "\ud83d\udd34 \ud83d\uded1"
     }
   ]
 }
