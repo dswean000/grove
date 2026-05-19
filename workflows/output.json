@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "Tue 05/19 10:49AM CT\nWatches: The Flood Watch has been cancelled.\nMesoscale Active: No\n\nRain Chance: Thursday 05/21 at 01AM (38%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Tue 05/19 1:04PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Thursday 05/21 at 01AM (38%)\nSPC Day 1 Risk: None (Level None)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
@@ -12,7 +12,7 @@
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
       "line1": "\u26ab \ud83d\udd39",
-      "line2": "\ud83d\udfe2 \u26ab"
+      "line2": "\u26ab \u26ab"
     }
   ]
 }
