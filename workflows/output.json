@@ -4,15 +4,15 @@
   "views": [
     {
       "type": "text",
-      "body": "Tue 05/19 3:48AM CT\nWatches: Flood Watch issued May 18 at 1:28PM CDT until May 19 at 1:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Tuesday 05/19 at 04AM (62%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n\nMidnight High for 2026-05-19: 67\u00b0F at 3:00 (Afternoon High: 63\u00b0F)"
+      "body": "Tue 05/19 7:10AM CT\nWatches: Flood Watch issued May 18 at 1:28PM CDT until May 19 at 1:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Thursday 05/21 at 01AM (38%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \ud83d\udd35",
-      "line2": "\ud83d\udfe0 \u26aa"
+      "line1": "\ud83d\udfe9 \ud83d\udd39",
+      "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
 }
