@@ -4,7 +4,7 @@
   "views": [
     {
       "type": "text",
-      "body": "Mon 06/08 2:03AM CT\nMon  Tue  Wed  Thu\n\ud83d\udfe2\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\ud83d\udd35\n\ud83d\udfe1\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+      "body": "Mon 06/08 7:07AM CT\nMon  Tue  Wed  Thu\n\ud83d\udfe2\ud83d\udd35  \u26ab\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35\n\ud83d\udfe1\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ],
   "families": [
@@ -12,7 +12,7 @@
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
       "header": "Mon  Tue  Wed  Thu",
-      "body1": "\ud83d\udfe2\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\ud83d\udd35",
+      "body1": "\ud83d\udfe2\ud83d\udd35  \u26ab\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35",
       "body2": "\ud83d\udfe1\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ]
