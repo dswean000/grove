@@ -4,16 +4,16 @@
   "views": [
     {
       "type": "text",
-      "body": "Mon 06/08 11:34PM CT\nMon  Tue  Wed  Thu\n\ud83d\udfe0\u26ab  \u26ab\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35\n\ud83d\udfe0\ud83d\uded1  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+      "body": "Tue 06/09 3:21AM CT\nTue  Wed  Thu  Fri\n\ud83d\udfe9\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\u26ab\n\ud83d\udfe0\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ],
   "families": [
     {
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
-      "header": "Mon  Tue  Wed  Thu",
-      "body1": "\ud83d\udfe0\u26ab  \u26ab\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\ud83d\udd35",
-      "body2": "\ud83d\udfe0\ud83d\uded1  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+      "header": "Tue  Wed  Thu  Fri",
+      "body1": "\ud83d\udfe9\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \ud83d\udfe1\ud83d\udd35  \u26ab\u26ab",
+      "body2": "\ud83d\udfe0\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ]
 }
