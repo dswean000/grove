@@ -4,15 +4,15 @@
   "views": [
     {
       "type": "text",
-      "body": "Fri 06/26 10:23PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: N/A (0%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Marginal Risk (Level 3)\n"
+      "body": "Sat 06/27 1:41AM CT\nWatches: Extreme Heat Watch issued June 27 at 1:17AM CDT until June 30 at 9:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: N/A (0%)\nSPC Day 1 Risk: Marginal Risk (Level 3)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \u26ab",
-      "line2": "\u26ab \u26ab"
+      "line1": "\ud83d\udfe2 \u26ab",
+      "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
 }
