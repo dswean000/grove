@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Fri 07/31 6:47AM CT\nWatches: Flash Flood Warning issued July 31 at 5:10AM CDT until July 31 at 8:15AM CDT by NWS Kansas City/Pleasant Hill MO, Flood Advisory issued July 31 at 4:32AM CDT until July 31 at 7:30AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Friday 07/31 at 07AM (50%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n"
+      "body": "Fri 07/31 9:03AM CT\nWatches: Flood Warning issued July 31 at 8:11AM CDT until July 31 at 10:00AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Thursday 08/06 at 01AM (34%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: None (Level None)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \ud83d\udd35",
+      "line1": "\ud83d\udfe9 \u26ab",
       "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
