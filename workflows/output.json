@@ -4,15 +4,15 @@
   "views": [
     {
       "type": "text",
-      "body": "Thu 08/06 9:05AM CT\nWatches: Flood Watch issued August 6 at 2:47AM CDT until August 6 at 10:00AM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Friday 08/07 at 01AM (44%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
+      "body": "Thu 08/06 7:15PM CT\nWatches: None\nMesoscale Active: No\n\nRain Chance: Thursday 08/13 at 01AM (46%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \ud83d\udfe6",
-      "line2": "\ud83d\udfe0 \u26ab"
+      "line1": "\ud83d\udfe9 \u26ab",
+      "line2": "\u26ab \u26ab"
     }
   ]
 }
