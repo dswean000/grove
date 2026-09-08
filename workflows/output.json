@@ -4,14 +4,14 @@
   "views": [
     {
       "type": "text",
-      "body": "Mon 09/07 7:40PM CT\nWatches: Extreme Heat Warning issued September 7 at 1:16PM CDT until September 8 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Wednesday 09/09 at 06AM (32%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
+      "body": "Tue 09/08 12:16AM CT\nWatches: Extreme Heat Warning issued September 7 at 1:16PM CDT until September 8 at 8:00PM CDT by NWS Kansas City/Pleasant Hill MO\nMesoscale Active: No\n\nRain Chance: Wednesday 09/09 at 06AM (32%)\nSPC Day 1 Risk: Non-Severe T-Storms (Level 2)\nSPC Day 2 Risk: Non-Severe T-Storms (Level 2)\n"
     }
   ],
   "families": [
     {
       "family": "graphicCircular",
       "class": "CLKComplicationTemplateGraphicCircularStackText",
-      "line1": "\ud83d\udfe9 \ud83d\udd39",
+      "line1": "\ud83d\udfe9 \ud83d\udfe6",
       "line2": "\ud83d\udfe0 \u26ab"
     }
   ]
