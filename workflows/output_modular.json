@@ -4,16 +4,16 @@
   "views": [
     {
       "type": "text",
-      "body": "Sat 11/21 7:19PM CT\nSat  Sun  Mon  Tue\n\ud83d\udfe9\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\u26ab  \u26ab\u26ab\n\u26ab\u26aa  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+      "body": "Sun 11/22 2:31AM CT\nSun  Mon  Tue  Wed\n\u26ab\ud83d\udd35  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab\n\u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ],
   "families": [
     {
       "family": "modularLarge",
       "class": "CLKComplicationTemplateModularLargeStandardBody",
-      "header": "Sat  Sun  Mon  Tue",
-      "body1": "\ud83d\udfe9\ud83d\udd35  \u26ab\ud83d\udd35  \u26ab\u26ab  \u26ab\u26ab",
-      "body2": "\u26ab\u26aa  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
+      "header": "Sun  Mon  Tue  Wed",
+      "body1": "\u26ab\ud83d\udd35  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab",
+      "body2": "\u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab  \u26ab\u26ab"
     }
   ]
 }
